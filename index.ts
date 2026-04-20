@@ -1,5 +1,5 @@
 import type { ExtensionAPI } from "@mariozechner/pi-coding-agent";
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -31,10 +31,20 @@ export default function i18nExtension(pi: ExtensionAPI): void {
 	// so we finalize in session_start.
 	const i18n = new I18nRegistry({ locale: "en", fallbackLocale: "en" });
 
-	const en = loadBundle(baseDir, "locales/en.json");
-	const zhTw = loadBundle(baseDir, "locales/zh-TW.json");
-	i18n.registerBundle(en);
-	i18n.registerBundle(zhTw);
+	// Load all shipped locale bundles from ./locales/*.json
+	try {
+		const localeDir = join(baseDir, "locales");
+		const files = readdirSync(localeDir).filter((f) => f.toLowerCase().endsWith(".json")).sort();
+		for (const f of files) {
+			try {
+				i18n.registerBundle(loadBundle(baseDir, `locales/${f}`));
+			} catch {
+				// ignore invalid bundle
+			}
+		}
+	} catch {
+		// ignore
+	}
 
 	// 2) Event-bus compliance bridge
 	pi.events.on("pi-i18n/requestApi", (payload: any) => {
