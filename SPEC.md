@@ -1,7 +1,7 @@
 ---
 id: pi-i18n
 title: pi-i18n (pi extension) — SPEC
-version: 0.1.2
+version: 0.1.3
 status: draft
 owner: jerry
 created_at: 2026-04-19
@@ -106,6 +106,12 @@ This extension is considered “done” only when:
 - `pi` — strings owned by `pi-i18n` that render Pi-level UI chrome/tool rows.
 - `ext.<name>` — recommended convention for extension packages.
 
+#### Canonical catalog boundary
+- `zh-TW` is the canonical benchmark locale for Pi-owned and compat-owned surfaces in this spec.
+- The canonical catalog is an **internal** resource arrangement for `pi-i18n` and does **not** replace the public extension bundle contract.
+- Extension authors MAY continue to ship their own locale files and keys exactly as they do today.
+- No extension is required to adopt the canonical catalog to remain compatible with `pi-i18n`.
+
 ---
 
 ## 4) Public API contract (what other extensions rely on)
@@ -146,6 +152,14 @@ Extensions MAY also register bundles by event:
 `pi-i18n` MUST validate bundles and either:
 - accept and store, or
 - reject and emit `pi-i18n/bundleRejected` with reasons.
+
+### 4.4 Compatibility boundary (non-breaking)
+The canonical catalog and locale-pack workflow defined later in this spec are **optional internal mechanisms** for `pi-i18n`-owned surfaces.
+They MUST NOT become a prerequisite for third-party extensions that already integrate through `I18nApi`, the event-bus handshake, or their own locale files.
+
+Hard rule:
+- Existing extension i18n implementations MUST remain compatible as long as they obey the public API in §4.1–§4.3.
+- No extension should need to rename its keys, reformat its bundles, or adopt the canonical catalog unless it explicitly opts into the internal Pi-owned surface workflow.
 
 ---
 
@@ -430,12 +444,54 @@ For changes targeting `src/core-hacks.ts`, operators MUST follow this checklist 
 
 ---
 
+## 7.8 Canonical key catalog (internal-only)
+
+### 7.8.1 Purpose
+Provide a single authoritative key set for Pi-owned UI surfaces so locale parity is machine-checkable and no shipped locale can silently miss keys.
+
+### 7.8.2 Scope
+This catalog applies only to:
+- `pi-i18n`-owned surfaces,
+- core-hack compat surfaces,
+- any first-party extension that explicitly opts into the canonical workflow.
+
+It does **not** replace or constrain the public extension bundle contract in §4.
+
+### 7.8.3 Suggested resource layout
+The implementation SHOULD use a resource-file arrangement with three layers:
+1. `catalog/keys.json` — stable key metadata and surface classification.
+2. `catalog/zh-TW.json` — canonical reference text for the key set.
+3. `locales/<locale>.json` — per-locale mirrors that must match the canonical key universe.
+
+The catalog MAY be generated into derived artifacts, but the canonical key set MUST remain deterministic and reviewable.
+
+### 7.8.4 Mirror rules
+- Every shipped locale mirror MUST contain the same key set as the canonical reference.
+- Missing keys are release blockers for the targeted surface set.
+- Extra keys are stale unless they are explicitly marked as legacy compatibility entries.
+- Enum values, option labels, helper text, and hint strings count as keys if they render to the user.
+
+### 7.8.5 One-pass addition workflow
+When a new Pi-owned string is introduced:
+1. add it to the canonical catalog,
+2. regenerate the locale mirrors,
+3. fill translations for each shipped locale,
+4. run parity checks,
+5. ship only when the intended rollout surface is complete or explicitly fallback-English by design.
+
+### 7.8.6 Compatibility with third-party extensions
+Third-party extensions MAY ignore the canonical catalog completely and keep using their own keys, bundles, and namespaces.
+That is the supported default path.
+
+The canonical catalog is for **Pi-owned surface completeness**, not for forcing every extension into the same file layout.
+
 ## 8) Scoring rubric (i18n_score)
 
 Score is 0–100 and MUST be computed from explicit checks:
 
 ### 8.1 Coverage (40 pts)
-- (20) Pi-owned UI surfaces localized: header/footer + built-in tool renderers.
+- (10) Canonical key catalog complete for shipped Pi-owned surfaces; parity checks pass.
+- (10) Pi-owned UI surfaces localized: header/footer + built-in tool renderers.
 - (20) First-party extension compliance demonstrated by localizing at least:
   - `public/pi-extensions/oneliner`, and
   - `internal/govern`.
@@ -482,6 +538,7 @@ Score is 0–100 and MUST be computed from explicit checks:
 ## 10) Changelog
 | Version | Date | Change Type | Summary | Approved By |
 |---|---|---|---|---|
+| 0.1.3 | 2026-04-20 | minor | add internal canonical key catalog + one-pass locale rollout procedure without breaking extension compatibility | jerry |
 | 0.1.0 | 2026-04-19 | major | initial spec (LTR i18n platform + zh-TW first) | jerry |
 | 0.1.1 | 2026-04-20 | minor | add LLM-assisted, non-AST core-drift adaptation pipeline + patch-spec contract | jerry |
 | 0.1.2 | 2026-04-20 | minor | command namespace consolidation (/lang only), runtime probe mode, upstream-compatible capability manifest | jerry |
