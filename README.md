@@ -3,6 +3,7 @@
 LTR-only i18n/l10n platform for the **pi coding agent** interactive TUI and for pi extensions.
 
 - First shipped locale: **zh-TW**
+- Also shipped: **zh-CN, ja, ko, es, pt-BR, fr, de**
 - RTL: later (explicitly not supported in v1)
 
 ## Acknowledgements (and why this is an extension, not a pi-core PR)
