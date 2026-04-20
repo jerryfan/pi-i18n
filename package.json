@@ -1,6 +1,6 @@
 {
   "name": "@jrryfn/pi-i18n",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "description": "LTR-only i18n/l10n platform for pi coding agent UI and extensions. Ships zh-TW first.",
   "license": "MIT",
   "repository": {

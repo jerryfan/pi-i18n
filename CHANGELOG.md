@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.1.9
+- Change: documented one-pass locale rollout procedure and broadened locale-pack coverage for core selector/settings surfaces.
+
 ## 0.1.8
 - Change(core-hacks): selector and settings hint translations now apply to all shipped locales via locale packs, not zh-TW only.
 - Change(core-hacks): locale packs expanded for current settings surfaces across zh-CN, ja, ko, es, pt-BR, fr, de.

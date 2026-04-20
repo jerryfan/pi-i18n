@@ -259,6 +259,17 @@ A locale is considered **rolled out** only when the following are true:
 A locale MUST NOT be treated as “done” if only one UI surface is translated while the others silently remain English.
 That is a **coverage gap**, not acceptable product behavior.
 
+### 7.5.5 One-pass locale addition procedure (required)
+When adding a new shipped language, the work MUST be completed in one pass across all affected surfaces:
+1. **Extension bundles**: add/update `locales/<locale>.json` for each extension that ships user-facing UI strings.
+2. **Monkeypatch packs**: add/update `src/core-hacks-locales/<locale>.json` with the core exact-anchor map for the same locale.
+3. **Picker + badge**: ensure `/lang` picker aliases and footer/status labels know the locale and its native display label.
+4. **TUI width check**: verify the native label fits the footer/status bar; if not, use a width-safe fallback by design, not by accident.
+5. **Doctor/build check**: run `/lang doctor` and a bundle build to confirm the locale is visible, loadable, and not missing required keys for the intended rollout surface.
+6. **Decision rule**: if any shipped surface is still silently English, the locale is not done yet; keep it explicitly fallback-English until the missing surface is added.
+
+This procedure exists so future locale work is added as a coherent rollout, not a partial translation pass.
+
 ---
 
 ## 7.6 Proactive core-drift adaptation (LLM-assisted, non-AST; 95+/100)
