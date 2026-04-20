@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.6
+- Add: shipped UI bundles for zh-CN, ja, ko, es, pt-BR, fr, de
+- Change: /lang picker now lists all shipped locales
+- Improve: /lang locale aliases expanded (zh-cn/cn, ja/jp, ko/kr, etc.)
+- Add(core-hacks): non-zh locale packs for monkeypatching via `src/core-hacks-locales/*.json`
+- Add(core-hacks): zh-TW parity check surfaced via `/lang doctor`
+
 ## 0.1.5
 - Breaking(command namespace): remove `/i18n` command; all operational controls are under `/lang`
 - Remove: external TypeBox dependency (no `@sinclair/typebox`)
