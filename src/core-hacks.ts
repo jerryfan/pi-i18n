@@ -1,10 +1,10 @@
 import type { I18nApi } from "./types";
 import { CombinedAutocompleteProvider, Loader } from "@mariozechner/pi-tui";
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { getProbeSnapshot, probeHit, probeHook, resetProbe, setProbeEnabled } from "./probe";
 import { homedir } from "node:os";
 import { dirname, join, resolve } from "node:path";
-import { pathToFileURL } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 
 const g = globalThis as any;
 const STATE_KEY = "__pi_i18n_core_hacks__";
@@ -190,6 +190,69 @@ function isZhTw(locale: string): boolean {
 	return l === "zh-tw" || l.startsWith("zh-tw-") || l.startsWith("zh-hant");
 }
 
+type CoreHackLocalePackV1 = {
+	version: 1;
+	locale: string;
+	exact: Record<string, string>;
+};
+
+const CORE_HACK_PACK_CACHE_KEY = "__pi_i18n_core_hack_packs__";
+const CORE_HACK_PACK_LOADED_KEY = "__pi_i18n_core_hack_packs_loaded__";
+
+function canonicalizeLocaleTag(input: string): string {
+	const raw = String(input ?? "").trim().replace(/_/g, "-");
+	const base = raw.split(".")[0] ?? raw; // handle zh_TW.UTF-8
+	const parts = base.split("-").filter(Boolean);
+	if (parts.length === 0) return "en";
+	const out: string[] = [];
+	out.push((parts[0] ?? "en").toLowerCase());
+	for (const p of parts.slice(1)) {
+		if (p.length === 2) out.push(p.toUpperCase());
+		else if (p.length === 4) out.push(p[0]!.toUpperCase() + p.slice(1).toLowerCase()); // Latn
+		else out.push(p.toLowerCase());
+	}
+	return out.join("-");
+}
+
+function getCoreHackPackCache(): Record<string, CoreHackLocalePackV1> {
+	if (!g[CORE_HACK_PACK_CACHE_KEY]) g[CORE_HACK_PACK_CACHE_KEY] = {} as Record<string, CoreHackLocalePackV1>;
+	return g[CORE_HACK_PACK_CACHE_KEY] as Record<string, CoreHackLocalePackV1>;
+}
+
+function loadCoreHackPacksOnce(): void {
+	if (g[CORE_HACK_PACK_LOADED_KEY]) return;
+	g[CORE_HACK_PACK_LOADED_KEY] = true;
+	try {
+		const baseDir = dirname(fileURLToPath(import.meta.url));
+		const packDir = join(baseDir, "core-hacks-locales");
+		if (!existsSync(packDir)) return;
+		const files = readdirSync(packDir).filter((f) => f.toLowerCase().endsWith(".json")).sort();
+		const cache = getCoreHackPackCache();
+		for (const f of files) {
+			try {
+				const raw = readFileSync(join(packDir, f), "utf-8");
+				const obj = JSON.parse(raw) as Partial<CoreHackLocalePackV1>;
+				if (obj.version !== 1) continue;
+				if (!obj.locale || typeof obj.locale !== "string") continue;
+				if (!obj.exact || typeof obj.exact !== "object") continue;
+				const key = canonicalizeLocaleTag(obj.locale);
+				cache[key] = { version: 1, locale: key, exact: obj.exact as Record<string, string> };
+			} catch {
+				// ignore invalid pack
+			}
+		}
+	} catch {
+		// ignore
+	}
+}
+
+function getCoreHackPack(locale: string): CoreHackLocalePackV1 | null {
+	loadCoreHackPacksOnce();
+	const l = canonicalizeLocaleTag(locale);
+	const cache = getCoreHackPackCache();
+	return cache[l] ?? cache[l.split("-")[0] ?? ""] ?? null;
+}
+
 // Full-dist scan anchor set (kept inline on purpose so NEED scan can prove coverage
 // against currently known core literals before we finish false-positive pruning).
 const CORE_FULL_SCAN_ANCHORS: string[] = [
@@ -297,7 +360,75 @@ const CORE_FULL_SCAN_ANCHORS: string[] = [
 	"Cancel selection",
 ];
 
+const ZH_TW_PARITY_SAMPLES: string[] = [
+	"Forked to new session",
+	"Resumed session",
+	"Resume cancelled",
+	"Nothing to compact (no messages yet)",
+	"Compaction cancelled",
+	"Auto-compaction cancelled",
+	"No entries in session",
+	"No queued messages to restore",
+	"Current model does not support thinking",
+	"No models available",
+	"Queued message for after compaction",
+	"Reloaded keybindings, extensions, skills, prompts, themes",
+	"Wait for the current response to finish before reloading.",
+	"Wait for compaction to finish before reloading.",
+	"Suspend to background is not supported on Windows",
+	"GitHub CLI is not logged in. Run 'gh auth login' first.",
+	"No OAuth providers logged in. Use /login first.",
+	"(cancelled)",
+	"Resource Configuration",
+	"Model Configuration",
+	"Session-only. Ctrl+S to save to settings.",
+	"(unsaved)",
+	"Rename Session",
+	"Auto-compact",
+	"Hide thinking",
+	"Quiet startup",
+];
+
+function tCoreFromPack(i18n: I18nApi, msg: string): string {
+	const s = String(msg ?? "");
+	if (CORE_FULL_SCAN_ANCHORS.length < 0) return s;
+	const pack = getCoreHackPack(i18n.getLocale());
+	if (!pack) return s;
+	const hit = pack.exact?.[s];
+	return typeof hit === "string" ? hit : s;
+}
+
 function tCore(i18n: I18nApi, msg: string): string {
+	// Hard guard: preserve legacy zh-TW monkeypatch behavior byte-for-byte.
+	if (isZhTw(i18n.getLocale())) return tCoreLegacyZhTw(i18n, msg);
+	return tCoreFromPack(i18n, msg);
+}
+
+export function verifyZhTwCoreHackParity(): {
+	ok: boolean;
+	checked: number;
+	mismatches: { input: string; legacy: string; current: string }[];
+	reason?: string;
+} {
+	try {
+		const fake = { getLocale: () => "zh-TW" } as any as I18nApi;
+		const mismatches: { input: string; legacy: string; current: string }[] = [];
+		let checked = 0;
+		for (const input of ZH_TW_PARITY_SAMPLES) {
+			const legacy = tCoreLegacyZhTw(fake, input);
+			if (legacy === input) continue; // skip non-translating samples
+			checked++;
+			const current = tCore(fake, input);
+			if (legacy !== current) mismatches.push({ input, legacy, current });
+		}
+		if (checked === 0) return { ok: false, checked, mismatches, reason: "no translating samples" };
+		return { ok: mismatches.length === 0, checked, mismatches };
+	} catch (e) {
+		return { ok: false, checked: 0, mismatches: [], reason: String(e) };
+	}
+}
+
+function tCoreLegacyZhTw(i18n: I18nApi, msg: string): string {
 	if (!isZhTw(i18n.getLocale())) return msg;
 
 	const s = String(msg ?? "");
@@ -1009,12 +1140,14 @@ const ZH_TW_BUILTIN_SLASH_DESC_BY_NAME: Record<string, string> = {
 };
 
 function localizeBuiltinSlashDesc(i18n: I18nApi, name: string, currentDesc?: string): string | undefined {
-	if (!isZhTw(i18n.getLocale())) return currentDesc;
-	// Try bundle key first (preferred)
+	// Prefer bundle-key translation for *all* locales.
 	const key = `pi.slash.${name}.description`;
 	const translated = i18n.t(key);
 	if (translated !== key) return translated;
-	return ZH_TW_BUILTIN_SLASH_DESC_BY_NAME[name] ?? currentDesc;
+
+	// Fallback: legacy hardcoded map (zh-TW only). Kept for older bundles.
+	if (isZhTw(i18n.getLocale())) return ZH_TW_BUILTIN_SLASH_DESC_BY_NAME[name] ?? currentDesc;
+	return currentDesc;
 }
 
 async function patchCoreBuiltinSlashCommandDescriptions(i18n: I18nApi): Promise<{ ok: boolean; reason?: string; changed?: number }> {
@@ -1037,13 +1170,8 @@ async function patchCoreBuiltinSlashCommandDescriptions(i18n: I18nApi): Promise<
 			if (!cmd || typeof cmd.name !== "string") continue;
 			const orig = state.original.slashDescs?.[cmd.name];
 
-			// Non-zh locales: restore
-			if (!isZhTw(i18n.getLocale())) {
-				if (orig !== undefined) cmd.description = orig;
-				continue;
-			}
-
-			const next = localizeBuiltinSlashDesc(i18n, cmd.name, orig ?? cmd.description);
+			const base = orig ?? cmd.description;
+			const next = localizeBuiltinSlashDesc(i18n, cmd.name, base);
 			if (typeof next === "string" && next !== cmd.description) {
 				cmd.description = next;
 				changed++;
@@ -1072,29 +1200,29 @@ function tSlashDesc(i18n: I18nApi, item: any): string | undefined {
 	}
 
 	// Fallback: legacy string replacement (zh-TW only). Kept for older bundles.
-	if (!isZhTw(i18n.getLocale())) return desc;
-
 	let s = String(desc);
-	s = s.replaceAll("Open settings menu", "開啟設定選單");
-	s = s.replaceAll("Select model (opens selector UI)", "選擇模型（開啟選擇器）");
-	s = s.replaceAll("Enable/disable models for Ctrl+P cycling", "啟用/停用模型（用於 Ctrl+P 循環切換）");
-	s = s.replaceAll("Export session (HTML default, or specify path: .html/.jsonl)", "匯出工作階段（預設 HTML，或指定 .html/.jsonl 路徑）");
-	s = s.replaceAll("Import and resume a session from a JSONL file", "從 JSONL 檔案匯入並恢復工作階段");
-	s = s.replaceAll("Share session as a secret GitHub gist", "以 GitHub secret gist 分享工作階段");
-	s = s.replaceAll("Copy last agent message to clipboard", "複製上一則助理訊息到剪貼簿");
-	s = s.replaceAll("Set session display name", "設定工作階段顯示名稱");
-	s = s.replaceAll("Show session info and stats", "顯示工作階段資訊與統計");
-	s = s.replaceAll("Show changelog entries", "顯示更新紀錄");
-	s = s.replaceAll("Show all keyboard shortcuts", "顯示所有鍵盤快捷鍵");
-	s = s.replaceAll("Create a new fork from a previous message", "從先前訊息建立新分岔");
-	s = s.replaceAll("Navigate session tree (switch branches)", "瀏覽工作階段樹（切換分支）");
-	s = s.replaceAll("Login with OAuth provider", "使用 OAuth 供應商登入");
-	s = s.replaceAll("Logout from OAuth provider", "登出 OAuth 供應商");
-	s = s.replaceAll("Start a new session", "開始新工作階段");
-	s = s.replaceAll("Manually compact the session context", "手動壓縮工作階段上下文");
-	s = s.replaceAll("Resume a different session", "恢復其他工作階段");
-	s = s.replaceAll("Reload keybindings, extensions, skills, prompts, and themes", "重新載入鍵位、擴充、技能、提示與主題");
-	s = s.replaceAll("Quit pi", "結束 pi");
+	if (isZhTw(i18n.getLocale())) {
+		s = s.replaceAll("Open settings menu", "開啟設定選單");
+		s = s.replaceAll("Select model (opens selector UI)", "選擇模型（開啟選擇器）");
+		s = s.replaceAll("Enable/disable models for Ctrl+P cycling", "啟用/停用模型（用於 Ctrl+P 循環切換）");
+		s = s.replaceAll("Export session (HTML default, or specify path: .html/.jsonl)", "匯出工作階段（預設 HTML，或指定 .html/.jsonl 路徑）");
+		s = s.replaceAll("Import and resume a session from a JSONL file", "從 JSONL 檔案匯入並恢復工作階段");
+		s = s.replaceAll("Share session as a secret GitHub gist", "以 GitHub secret gist 分享工作階段");
+		s = s.replaceAll("Copy last agent message to clipboard", "複製上一則助理訊息到剪貼簿");
+		s = s.replaceAll("Set session display name", "設定工作階段顯示名稱");
+		s = s.replaceAll("Show session info and stats", "顯示工作階段資訊與統計");
+		s = s.replaceAll("Show changelog entries", "顯示更新紀錄");
+		s = s.replaceAll("Show all keyboard shortcuts", "顯示所有鍵盤快捷鍵");
+		s = s.replaceAll("Create a new fork from a previous message", "從先前訊息建立新分岔");
+		s = s.replaceAll("Navigate session tree (switch branches)", "瀏覽工作階段樹（切換分支）");
+		s = s.replaceAll("Login with OAuth provider", "使用 OAuth 供應商登入");
+		s = s.replaceAll("Logout from OAuth provider", "登出 OAuth 供應商");
+		s = s.replaceAll("Start a new session", "開始新工作階段");
+		s = s.replaceAll("Manually compact the session context", "手動壓縮工作階段上下文");
+		s = s.replaceAll("Resume a different session", "恢復其他工作階段");
+		s = s.replaceAll("Reload keybindings, extensions, skills, prompts, and themes", "重新載入鍵位、擴充、技能、提示與主題");
+		s = s.replaceAll("Quit pi", "結束 pi");
+	}
 	return tCore(i18n, s);
 }
 

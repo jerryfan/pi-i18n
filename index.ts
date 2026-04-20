@@ -16,6 +16,7 @@ import {
 	setCoreProbeEnabled,
 	shouldWarnCoreMisalignment,
 	uninstallCoreHacks,
+	verifyZhTwCoreHackParity,
 } from "./src/core-hacks";
 
 function loadBundle(baseDir: string, rel: string): BundleV1 {
@@ -276,22 +277,22 @@ export default function i18nExtension(pi: ExtensionAPI): void {
 		const { issues } = i18n.doctor();
 		if (issues.length === 0) {
 			ctx.ui.notify(i18n.t("pi.doctor.ok"), "info");
-			return;
-		}
-		ctx.ui.notify(i18n.t("pi.doctor.issues", { count: issues.length }), "warning");
-		for (const issue of issues.slice(0, 12)) {
-			if (issue.type === "missing_key") {
-				ctx.ui.notify(i18n.t("pi.doctor.missingKey", issue), "warning");
-			} else {
-				ctx.ui.notify(
-					i18n.t("pi.doctor.placeholderMismatch", {
-						namespace: issue.namespace,
-						key: issue.key,
-						expected: issue.expected.join(",") || "(none)",
-						got: issue.got.join(",") || "(none)",
-					}),
-					"warning",
-				);
+		} else {
+			ctx.ui.notify(i18n.t("pi.doctor.issues", { count: issues.length }), "warning");
+			for (const issue of issues.slice(0, 12)) {
+				if (issue.type === "missing_key") {
+					ctx.ui.notify(i18n.t("pi.doctor.missingKey", issue), "warning");
+				} else {
+					ctx.ui.notify(
+						i18n.t("pi.doctor.placeholderMismatch", {
+							namespace: issue.namespace,
+							key: issue.key,
+							expected: issue.expected.join(",") || "(none)",
+							got: issue.got.join(",") || "(none)",
+						}),
+						"warning",
+					);
+				}
 			}
 		}
 
@@ -300,6 +301,16 @@ export default function i18nExtension(pi: ExtensionAPI): void {
 			`probe: enabled=${probe.enabled} total=${probe.summary.total} matched=${probe.summary.matched} notFound=${probe.summary.notFound} unsafe=${probe.summary.unsafe} hit=${probe.summary.hit} translated=${probe.summary.translated}`,
 			probe.summary.notFound > 0 || probe.summary.unsafe > 0 ? "warning" : "info",
 		);
+
+		const parity = verifyZhTwCoreHackParity();
+		ctx.ui.notify(
+			`core-hacks zh-TW parity: ok=${parity.ok} checked=${parity.checked}${parity.reason ? ` reason=${parity.reason}` : ""}`,
+			parity.ok ? "info" : "warning",
+		);
+		if (!parity.ok && parity.mismatches[0]) {
+			const m = parity.mismatches[0];
+			ctx.ui.notify(`core-hacks parity mismatch: '${m.input}' -> legacy='${m.legacy}' current='${m.current}'`, "warning");
+		}
 	}
 
 	function commandDebug(_args: string, ctx: any): void {
