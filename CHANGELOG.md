@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.1.10
+- Change: completed the current core-settings locale pass for all shipped non-English locale packs, including selector labels, descriptions, and choice labels.
+
 ## 0.1.9
 - Change: documented one-pass locale rollout procedure and broadened locale-pack coverage for core selector/settings surfaces.
 

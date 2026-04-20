@@ -1,7 +1,7 @@
 ---
 id: pi-i18n
 title: pi-i18n (pi extension) — SPEC
-version: 0.1.3
+version: 0.1.4
 status: draft
 owner: jerry
 created_at: 2026-04-19
@@ -538,6 +538,7 @@ Score is 0–100 and MUST be computed from explicit checks:
 ## 10) Changelog
 | Version | Date | Change Type | Summary | Approved By |
 |---|---|---|---|---|
+| 0.1.4 | 2026-04-20 | minor | complete shipped locale packs for the current core settings surface without changing public extension i18n contracts | jerry |
 | 0.1.3 | 2026-04-20 | minor | add internal canonical key catalog + one-pass locale rollout procedure without breaking extension compatibility | jerry |
 | 0.1.0 | 2026-04-19 | major | initial spec (LTR i18n platform + zh-TW first) | jerry |
 | 0.1.1 | 2026-04-20 | minor | add LLM-assisted, non-AST core-drift adaptation pipeline + patch-spec contract | jerry |
