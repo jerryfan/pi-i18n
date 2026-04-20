@@ -337,6 +337,46 @@ Runtime behavior:
 - MUST locale-gate any Tier-3/4 transformations.
 - MUST store originals and restore when locale changes away or when uninstalling.
 
+## 7.7 Extension ecosystem integration (PR-first; compat layer)
+
+### 7.7.1 Preferred: submit PRs to the extension repo
+To localize an extension sustainably (≥95/100), the correct path is to **add i18n support inside the extension**:
+- Use the `pi-i18n` **event-bus handshake** (§4.2) to avoid a hard dependency.
+- Ship `locales/en.json` as the **baseline** and add other locale JSON files as desired.
+- Replace user-facing UI strings with `t("ext.<name>.<key>")` lookups.
+- Keep an English fallback so the extension remains usable without `pi-i18n`.
+
+A ready-to-copy PR description template is provided in this repo:
+- `.github/pull_request_template.md`
+
+### 7.7.2 Compat layer: when an extension will not accept PRs
+If an extension is third-party and will not accept i18n changes, `pi-i18n` MAY provide a **best-effort compat layer** by translating that extension's UI strings at runtime.
+
+**Hard limits (non-negotiable):**
+- Compat MUST remain UI-only.
+  - Do NOT translate model outputs, tool outputs, or file contents.
+- Compat MUST be locale-gated (e.g. apply only for `zh-TW`, `zh-CN`, etc.).
+- Compat MUST be reversible (store originals; restore on uninstall/locale change).
+- Compat MUST prefer stable patch points (Tier 1/2) over regex rewriting.
+
+**Where to implement compat:**
+- Primary: `src/core-hacks.ts` string anchors + selector/text-tree postprocessing.
+  - Add exact-match anchors when available.
+  - Add narrowly-scoped regex patterns only as last resort.
+
+**Compat workflow (repeatable):**
+1. Identify the exact user-facing string and its render path (file + method/component).
+2. Prefer PR-style keying when possible; otherwise add a compat mapping:
+   - Exact map entry (preferred)
+   - Pattern rule (last resort; must be tight)
+3. Add probe instrumentation (or rely on existing probe points) so `/lang probe` can confirm the compat path is actually hit.
+4. Update `tools/need-scan.mjs` inventory if new strings appear (drift control).
+5. Manual proof in a live session for the target extension paths.
+
+**When compat is acceptable:**
+- The string is high-impact (command usage, picker labels, warnings/errors).
+- The string is stable across versions (or has an easy-to-detect anchor).
+
 ### 7.6.9 Translation-change gotchas (required operator checklist)
 For changes targeting `src/core-hacks.ts`, operators MUST follow this checklist to preserve ≥95/100:
 
