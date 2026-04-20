@@ -1,0 +1,55 @@
+{
+  "name": "@jrryfn/pi-i18n",
+  "version": "0.1.5",
+  "description": "LTR-only i18n/l10n platform for pi coding agent UI and extensions. Ships zh-TW first.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jerryfan/pi-i18n.git"
+  },
+  "homepage": "https://github.com/jerryfan/pi-i18n",
+  "bugs": {
+    "url": "https://github.com/jerryfan/pi-i18n/issues"
+  },
+  "keywords": [
+    "pi-package",
+    "pi",
+    "extension",
+    "i18n",
+    "l10n",
+    "localization",
+    "terminal-ui",
+    "tui",
+    "zh-tw"
+  ],
+  "pi": {
+    "extensions": [
+      "./index.ts"
+    ],
+    "i18n": {
+      "manifest": "./i18n.manifest.json",
+      "capability": "pi.i18n.v1",
+      "contractVersion": 1
+    }
+  },
+  "files": [
+    "index.ts",
+    "src/**",
+    "locales/*.json",
+    "schemas/*.json",
+    "i18n.manifest.json",
+    "README.md",
+    "SPEC.md",
+    "MVP.md",
+    "CHANGELOG.md",
+    "RELEASE.md",
+    "LICENSE"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "peerDependencies": {
+    "@mariozechner/pi-coding-agent": "*",
+    "@mariozechner/pi-tui": "*"
+  }
+}
