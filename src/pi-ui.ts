@@ -8,6 +8,27 @@ function shorten(s: string, max = 90): string {
 	return s.slice(0, Math.max(0, max - 1)) + "…";
 }
 
+function localeNativeLabel(locale: string): string {
+	const raw = String(locale ?? "en").trim().replace(/_/g, "-");
+	const l = raw.toLowerCase();
+	const base = l.split(/[-_]/)[0] || "en";
+
+	if (l === "zh-tw" || l.startsWith("zh-tw") || l.startsWith("zh-hant")) return "繁體";
+	if (l === "zh-cn" || l.startsWith("zh-cn") || l.startsWith("zh-hans")) return "简体";
+	if (base === "zh") return "中文";
+
+	if (base === "ja") return "日本語";
+	if (base === "ko") return "한국어";
+	if (base === "es") return "Español";
+	if (l === "pt-br" || base === "pt") return "Português";
+	if (base === "fr") return "Français";
+	if (base === "de") return "Deutsch";
+	if (base === "en") return "English";
+
+	// fallback to locale tag
+	return raw || "en";
+}
+
 function safePath(path: any): string {
 	return typeof path === "string" && path.trim() ? path : "?";
 }
@@ -247,7 +268,7 @@ export function applyLocalizedFooter(pi: ExtensionAPI, ctx: any, i18n: I18nApi, 
 			render(width: number): string[] {
 				const locale = i18n.getLocale();
 				const branch = footerData.getGitBranch();
-				const left = theme.fg("muted", `lang:${locale}`);
+				const left = theme.fg("muted", `lang:${localeNativeLabel(locale)}`);
 				const right = branch ? theme.fg("dim", `⎇ ${branch}`) : "";
 				let line = left;
 				if (right) {

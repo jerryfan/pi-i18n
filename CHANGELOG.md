@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.1.7
+- Change(footer): show native language label (e.g. 日本語) instead of raw locale code.
+
 ## 0.1.6
 - Add: shipped UI bundles for zh-CN, ja, ko, es, pt-BR, fr, de
 - Change: /lang picker now lists all shipped locales
