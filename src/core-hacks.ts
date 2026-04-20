@@ -61,8 +61,11 @@ export function getSlashDescMode(): { mode: SlashDescMode; reason?: string } {
 }
 
 export function shouldWarnCoreMisalignment(i18n: I18nApi): boolean {
-	// Only warn when we *wanted* localization (zh-TW) but had to fall back.
-	return isZhTw(i18n.getLocale()) && getSlashDescMode().mode === "fallback";
+	// Warn when we *wanted* localization (non-English locale selected) but had to fall back.
+	const l = String(i18n.getLocale() || "").toLowerCase();
+	const lang = (l.split("-")[0] ?? l).trim();
+	if (!lang || lang === "en") return false;
+	return getSlashDescMode().mode === "fallback";
 }
 
 export function setCoreProbeEnabled(enabled: boolean): void {

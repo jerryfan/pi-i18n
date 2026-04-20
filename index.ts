@@ -33,12 +33,18 @@ export default function i18nExtension(pi: ExtensionAPI): void {
 	const i18n = new I18nRegistry({ locale: "en", fallbackLocale: "en" });
 
 	// Load all shipped locale bundles from ./locales/*.json
+	// Track which locales are shipped for the pi namespace so /lang picker can list them.
+	const shippedPiLocales = new Set<string>();
 	try {
 		const localeDir = join(baseDir, "locales");
 		const files = readdirSync(localeDir).filter((f) => f.toLowerCase().endsWith(".json")).sort();
 		for (const f of files) {
 			try {
-				i18n.registerBundle(loadBundle(baseDir, `locales/${f}`));
+				const bundle = loadBundle(baseDir, `locales/${f}`);
+				i18n.registerBundle(bundle);
+				if (bundle?.namespace === "pi" && typeof bundle?.locale === "string") {
+					shippedPiLocales.add(canonicalizeLocaleTag(bundle.locale));
+				}
 			} catch {
 				// ignore invalid bundle
 			}
@@ -197,9 +203,40 @@ export default function i18nExtension(pi: ExtensionAPI): void {
 			enus: "en-US",
 			"en-us": "en-US",
 			us: "en-US",
+
 			"zh-tw": "zh-TW",
 			zhtw: "zh-TW",
 			tw: "zh-TW",
+			"zh-hant": "zh-TW",
+
+			"zh-cn": "zh-CN",
+			zhcn: "zh-CN",
+			cn: "zh-CN",
+			"zh-hans": "zh-CN",
+
+			ja: "ja",
+			jp: "ja",
+			japanese: "ja",
+
+			ko: "ko",
+			kr: "ko",
+			korean: "ko",
+
+			es: "es",
+			spa: "es",
+			spanish: "es",
+
+			pt: "pt-BR",
+			ptbr: "pt-BR",
+			"pt-br": "pt-BR",
+			portuguese: "pt-BR",
+			br: "pt-BR",
+
+			fr: "fr",
+			french: "fr",
+
+			de: "de",
+			german: "de",
 		};
 
 		const mapped = aliases[k1] ?? aliases[k2];
@@ -235,21 +272,54 @@ export default function i18nExtension(pi: ExtensionAPI): void {
 			const title = i18n.t("pi.language.dialog.title");
 			const pick = i18n.t("pi.language.dialog.pick");
 
+			const DISPLAY_NAMES: Record<string, string> = {
+				en: "English",
+				"zh-TW": "繁體中文",
+				"zh-CN": "简体中文",
+				ja: "日本語",
+				ko: "한국어",
+				es: "Español",
+				"pt-BR": "Português (Brasil)",
+				fr: "Français",
+				de: "Deutsch",
+			};
+
+			const curCanon = canonicalizeLocaleTag(current);
+			const ORDER = ["en", "zh-TW", "zh-CN", "ja", "ko", "es", "pt-BR", "fr", "de"];
+			const shipped = Array.from(shippedPiLocales);
+			const byOrder = (a: string, b: string): number => {
+				const ia = ORDER.indexOf(a);
+				const ib = ORDER.indexOf(b);
+				if (ia !== -1 || ib !== -1) return (ia === -1 ? 999 : ia) - (ib === -1 ? 999 : ib);
+				return a.localeCompare(b);
+			};
+
+			const known = shipped.sort(byOrder);
 			const options = [
-				`English (en)${current === "en" ? " ✓" : ""}`,
-				`繁體中文 (zh-TW)${current.toLowerCase() === "zh-tw" ? " ✓" : ""}`,
+				...known.map((l) => {
+					const tag = canonicalizeLocaleTag(l);
+					const name = DISPLAY_NAMES[tag] ?? tag;
+					return `${name} (${tag})${tag === curCanon ? " ✓" : ""}`;
+				}),
 				i18n.t("pi.language.dialog.other"),
 			];
 
 			const choice = await ctx.ui.select(`${title}: ${pick}`, options);
 			if (!choice) return;
 
-			if (choice.startsWith("English")) locale = "en";
-			else if (choice.startsWith("繁體中文")) locale = "zh-TW";
-			else {
+			if (choice === i18n.t("pi.language.dialog.other")) {
 				const other = await ctx.ui.input(title, i18n.t("pi.language.dialog.other.placeholder"));
 				if (!other) return;
 				locale = other;
+			} else {
+				const m = /\(([a-zA-Z0-9-]+)\)/.exec(choice);
+				if (m?.[1]) locale = m[1];
+				else {
+					// Fallback: treat as manual input to avoid dead-ends.
+					const other = await ctx.ui.input(title, i18n.t("pi.language.dialog.other.placeholder"));
+					if (!other) return;
+					locale = other;
+				}
 			}
 		}
 
@@ -380,8 +450,11 @@ export default function i18nExtension(pi: ExtensionAPI): void {
 			ctx.ui.notify(i18n.t("pi.i18n.setup.usage"), "warning");
 			return;
 		}
-		const env = detectLocaleFromEnv();
-		const locale = env && env.toLowerCase().startsWith("zh") ? "zh-TW" : i18n.getLocale().startsWith("zh") ? "zh-TW" : "en";
+		const envRaw = detectLocaleFromEnv();
+		const env = envRaw ? canonicalizeLocaleTag(envRaw) : "";
+		const envLang = env.split("-")[0] ?? env;
+		const preferred = shippedPiLocales.has(env) ? env : shippedPiLocales.has(envLang) ? envLang : "";
+		const locale = preferred || (env && env.toLowerCase().startsWith("zh") ? "zh-TW" : i18n.getLocale().startsWith("zh") ? "zh-TW" : "en");
 		saveUserI18nConfig({
 			locale,
 			fallbackLocale: "en",
