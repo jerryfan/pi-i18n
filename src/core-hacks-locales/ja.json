@@ -32,7 +32,7 @@
     "  No matching models": "  一致するモデルがありません",
     " ✓ logged in": " ✓ ログイン済み",
     "Model Configuration": "モデル設定",
-    "Session-only. Ctrl+S to save to settings.": "このセッションのみ。Ctrl+S で設定に保存します。",
+    "Session-only. Ctrl+S to save to settings.": "このセッションのみ。Ctrl+S で設定に保存。",
     "Rename Session": "セッション名を変更",
     "  Enter to select · Esc to go back": "  Enter で選択 · Esc で戻る",
     "Auto-compact": "自動圧縮",
@@ -49,6 +49,21 @@
     "Render images inline in terminal": "ターミナル内で画像をインライン表示する",
     "Auto-resize images": "画像を自動リサイズ",
     "Resize large images to 2000x2000 max for better model compatibility": "大きな画像を最大 2000x2000 にリサイズして互換性を向上させる",
-    "Block images": "画像をブロック"
+    "Block images": "画像をブロック",
+    "Type to search · Enter/Space to change · Esc to cancel": "入力して検索 · Enter/Space で変更 · Esc でキャンセル",
+    "Enter/Space to change · Esc to cancel": "Enter/Space で変更 · Esc でキャンセル",
+    "No settings available": "利用可能な設定がありません",
+    "No matching settings": "一致する設定がありません",
+    "Skill commands": "スキルコマンド",
+    "Show hardware cursor": "ハードウェアカーソルを表示",
+    "Autocomplete max items": "自動補完の最大項目数",
+    "Clear on shrink": "縮小時に消去",
+    "Enter to select · Esc to go back": "Enter で選択 · Esc で戻る",
+    "No reasoning": "推論なし",
+    "Very brief reasoning (~1k tokens)": "ごく短い推論（約 1k tokens）",
+    "Light reasoning (~2k tokens)": "軽い推論（約 2k tokens）",
+    "Moderate reasoning (~8k tokens)": "中程度の推論（約 8k tokens）",
+    "Deep reasoning (~16k tokens)": "深い推論（約 16k tokens）",
+    "Maximum reasoning (~32k tokens)": "最大推論（約 32k tokens）"
   }
 }

@@ -49,6 +49,21 @@
     "Render images inline in terminal": "Renderizar imágenes en línea en la terminal",
     "Auto-resize images": "Redimensionar imágenes automáticamente",
     "Resize large images to 2000x2000 max for better model compatibility": "Redimensionar imágenes grandes a un máximo de 2000x2000 para mejor compatibilidad con el modelo",
-    "Block images": "Bloquear imágenes"
+    "Block images": "Bloquear imágenes",
+    "Type to search · Enter/Space to change · Esc to cancel": "Escribe para buscar · Enter/Space para cambiar · Esc para cancelar",
+    "Enter/Space to change · Esc to cancel": "Enter/Space para cambiar · Esc para cancelar",
+    "No settings available": "No hay ajustes disponibles",
+    "No matching settings": "No hay ajustes que coincidan",
+    "Skill commands": "Comandos de skill",
+    "Show hardware cursor": "Mostrar cursor hardware",
+    "Autocomplete max items": "Máximo de autocompletado",
+    "Clear on shrink": "Limpiar al reducir",
+    "Enter to select · Esc to go back": "Enter para seleccionar · Esc para volver",
+    "No reasoning": "Sin razonamiento",
+    "Very brief reasoning (~1k tokens)": "Razonamiento muy breve (~1k tokens)",
+    "Light reasoning (~2k tokens)": "Razonamiento ligero (~2k tokens)",
+    "Moderate reasoning (~8k tokens)": "Razonamiento moderado (~8k tokens)",
+    "Deep reasoning (~16k tokens)": "Razonamiento profundo (~16k tokens)",
+    "Maximum reasoning (~32k tokens)": "Razonamiento máximo (~32k tokens)"
   }
 }

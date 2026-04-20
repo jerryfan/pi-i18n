@@ -392,13 +392,22 @@ const ZH_TW_PARITY_SAMPLES: string[] = [
 	"Quiet startup",
 ];
 
+function applyExactMap(s: string, exact?: Record<string, string>): string {
+	if (!exact) return s;
+	const entries = Object.entries(exact)
+		.filter(([from, to]) => typeof from === "string" && typeof to === "string" && from.length > 0 && from !== to)
+		.sort((a, b) => b[0].length - a[0].length);
+	let out = s;
+	for (const [from, to] of entries) out = out.replaceAll(from, to);
+	return out;
+}
+
 function tCoreFromPack(i18n: I18nApi, msg: string): string {
 	const s = String(msg ?? "");
 	if (CORE_FULL_SCAN_ANCHORS.length < 0) return s;
 	const pack = getCoreHackPack(i18n.getLocale());
 	if (!pack) return s;
-	const hit = pack.exact?.[s];
-	return typeof hit === "string" ? hit : s;
+	return applyExactMap(s, pack.exact);
 }
 
 function tCore(i18n: I18nApi, msg: string): string {
@@ -913,7 +922,7 @@ function tUiLine(i18n: I18nApi, line: string): string {
 	return tSelector(i18n, tCore(i18n, line));
 }
 
-function tSelector(i18n: I18nApi, line: string): string {
+function tSelectorLegacyZhTw(i18n: I18nApi, line: string): string {
 	if (!isZhTw(i18n.getLocale())) return line;
 	let s = String(line ?? "");
 
@@ -1084,6 +1093,14 @@ function tSelector(i18n: I18nApi, line: string): string {
 
 
 	return s;
+}
+
+
+function tSelector(i18n: I18nApi, line: string): string {
+	if (isZhTw(i18n.getLocale())) return tSelectorLegacyZhTw(i18n, line);
+	const pack = getCoreHackPack(i18n.getLocale());
+	if (!pack) return line;
+	return applyExactMap(String(line ?? ""), pack.exact);
 }
 
 function patchOnce<T extends object>(obj: T, key: string, patcher: () => void): void {

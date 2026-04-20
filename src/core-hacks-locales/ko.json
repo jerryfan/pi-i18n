@@ -32,7 +32,7 @@
     "  No matching models": "  일치하는 모델이 없습니다",
     " ✓ logged in": " ✓ 로그인됨",
     "Model Configuration": "모델 설정",
-    "Session-only. Ctrl+S to save to settings.": "이 세션에만 적용됩니다. Ctrl+S로 설정에 저장합니다.",
+    "Session-only. Ctrl+S to save to settings.": "이 세션에만 적용됩니다. Ctrl+S로 설정에 저장.",
     "Rename Session": "세션 이름 바꾸기",
     "  Enter to select · Esc to go back": "  Enter 선택 · Esc 돌아가기",
     "Auto-compact": "자동 압축",
@@ -49,6 +49,21 @@
     "Render images inline in terminal": "터미널에서 이미지를 인라인으로 렌더링",
     "Auto-resize images": "이미지 자동 크기 조정",
     "Resize large images to 2000x2000 max for better model compatibility": "모델 호환성을 위해 큰 이미지를 최대 2000x2000으로 조정",
-    "Block images": "이미지 차단"
+    "Block images": "이미지 차단",
+    "Type to search · Enter/Space to change · Esc to cancel": "입력하여 검색 · Enter/Space로 변경 · Esc로 취소",
+    "Enter/Space to change · Esc to cancel": "Enter/Space로 변경 · Esc로 취소",
+    "No settings available": "사용 가능한 설정이 없습니다",
+    "No matching settings": "일치하는 설정이 없습니다",
+    "Skill commands": "스킬 명령",
+    "Show hardware cursor": "하드웨어 커서 표시",
+    "Autocomplete max items": "자동완성 최대 항목 수",
+    "Clear on shrink": "축소 시 지우기",
+    "Enter to select · Esc to go back": "Enter 선택 · Esc 돌아가기",
+    "No reasoning": "추론 없음",
+    "Very brief reasoning (~1k tokens)": "매우 짧은 추론 (~1k 토큰)",
+    "Light reasoning (~2k tokens)": "가벼운 추론 (~2k 토큰)",
+    "Moderate reasoning (~8k tokens)": "보통 추론 (~8k 토큰)",
+    "Deep reasoning (~16k tokens)": "깊은 추론 (~16k 토큰)",
+    "Maximum reasoning (~32k tokens)": "최대 추론 (~32k 토큰)"
   }
 }

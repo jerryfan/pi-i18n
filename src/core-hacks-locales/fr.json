@@ -35,7 +35,7 @@
     "Session-only. Ctrl+S to save to settings.": "Uniquement pour cette session. Ctrl+S pour enregistrer dans les paramètres.",
     "Rename Session": "Renommer la session",
     "  Enter to select · Esc to go back": "  Entrée pour sélectionner · Esc pour revenir",
-    "Auto-compact": "Auto-compact",
+    "Auto-compact": "Compactage auto",
     "Automatically compact context when it gets too large": "Compacter automatiquement le contexte lorsqu’il devient trop grand",
     "Hide thinking": "Masquer thinking",
     "Hide thinking blocks in assistant responses": "Masquer les blocs de thinking dans les réponses de l’assistant",
@@ -49,6 +49,21 @@
     "Render images inline in terminal": "Afficher les images en ligne dans le terminal",
     "Auto-resize images": "Redimensionner automatiquement les images",
     "Resize large images to 2000x2000 max for better model compatibility": "Redimensionner les grandes images à 2000x2000 max pour une meilleure compatibilité",
-    "Block images": "Bloquer les images"
+    "Block images": "Bloquer les images",
+    "Type to search · Enter/Space to change · Esc to cancel": "Tapez pour rechercher · Enter/Space pour changer · Esc pour annuler",
+    "Enter/Space to change · Esc to cancel": "Enter/Space pour changer · Esc pour annuler",
+    "No settings available": "Aucun réglage disponible",
+    "No matching settings": "Aucun réglage correspondant",
+    "Skill commands": "Commandes de skill",
+    "Show hardware cursor": "Afficher le curseur matériel",
+    "Autocomplete max items": "Nombre max d’éléments d’autocomplétion",
+    "Clear on shrink": "Effacer à la réduction",
+    "Enter to select · Esc to go back": "Enter pour sélectionner · Esc pour revenir",
+    "No reasoning": "Sans raisonnement",
+    "Very brief reasoning (~1k tokens)": "Raisonnement très bref (~1k tokens)",
+    "Light reasoning (~2k tokens)": "Raisonnement léger (~2k tokens)",
+    "Moderate reasoning (~8k tokens)": "Raisonnement modéré (~8k tokens)",
+    "Deep reasoning (~16k tokens)": "Raisonnement profond (~16k tokens)",
+    "Maximum reasoning (~32k tokens)": "Raisonnement maximal (~32k tokens)"
   }
 }

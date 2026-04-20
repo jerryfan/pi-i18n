@@ -209,12 +209,16 @@ Bundle value may be:
 Some high-impact UI strings in Pi are currently **owned by pi-core** and not exposed via stable extension APIs.
 To hit the 95+/100 UX bar without waiting for upstream hooks, `pi-i18n` MAY apply **best-effort monkey patches** at runtime.
 
+This is the **current standard workaround** and MUST be treated as a deliberate compatibility layer, not as optional fragmentation.
+
 #### 7.5.1 Invariants (safety)
 - MUST NOT change command invocation tokens/IDs (e.g. `/model` stays `/model`).
 - MUST change **descriptions only** (display-only text).
 - MUST be idempotent (safe to call on every locale change).
 - MUST store originals and restore when locale changes away from the target locale or when uninstalling.
 - MUST fail closed (patch failure must not crash Pi; it merely leaves English strings).
+- MUST preserve the existing zh-TW path exactly until a deliberate equivalence step says otherwise.
+- MUST NOT reclassify the workaround as “fragmentation”; if translation is partial, that is a coverage gap, not a new architecture.
 
 #### 7.5.2 Slash-command description localization (two-layer strategy, 95+/100)
 **Problem:** built-in slash command metadata (name+description) is hardcoded in pi-core and used by the interactive `/` autocomplete.
@@ -244,6 +248,16 @@ Deep imports like `@mariozechner/pi-coding-agent/dist/...` are therefore unrelia
 - `/lang debug` MUST report:
   - `slashDescMode = primary|fallback|none` (and reason)
   - resolved `coreDist` path (or `<not found>`)
+
+### 7.5.4 Locale rollout policy (no half-implementation)
+A locale is considered **rolled out** only when the following are true:
+- status/footer badge shows the locale using the current standards (native label when possible, width-safe fallback when needed)
+- language picker includes the locale
+- monkeypatch surfaces for that locale are enabled on the same runtime path as the rest of the shipped locale set
+- translation coverage is either complete for the intended surface or explicitly documented as fallback-English by design
+
+A locale MUST NOT be treated as “done” if only one UI surface is translated while the others silently remain English.
+That is a **coverage gap**, not acceptable product behavior.
 
 ---
 
