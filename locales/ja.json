@@ -35,6 +35,13 @@
     "ui.header.title": "pi — ローカライズ",
     "ui.header.hint": "{locale} • /lang",
 
+    "demo.chat.title": "デモチャット",
+    "demo.chat.userLabel": "あなた",
+    "demo.chat.assistantLabel": "アシスタント",
+    "demo.chat.userText": "pi-i18n は何をする拡張ですか？",
+    "demo.chat.assistantText": "pi-coreを変更せずに、PiのTUIと拡張機能を多言語化します。",
+    "demo.chat.closeHint": "Enter/Esc で閉じる",
+
     "slash.settings.description": "設定メニューを開く",
     "slash.model.description": "モデルを選択（セレクターを開く）",
     "slash.scoped-models.description": "Ctrl+P の循環用にモデルを有効/無効",
@@ -47,6 +54,7 @@
     "slash.changelog.description": "更新履歴を表示",
     "slash.hotkeys.description": "全キーボードショートカットを表示",
     "slash.fork.description": "以前のメッセージから新しい分岐を作成",
+    "slash.clone.description": "現在の位置で現在のセッションを複製",
     "slash.tree.description": "セッションツリーを移動（ブランチ切替）",
     "slash.login.description": "OAuth プロバイダーでログイン",
     "slash.logout.description": "OAuth プロバイダーからログアウト",

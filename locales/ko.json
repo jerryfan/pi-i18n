@@ -35,6 +35,13 @@
     "ui.header.title": "pi — 로컬라이즈됨",
     "ui.header.hint": "{locale} • /lang",
 
+    "demo.chat.title": "데모 채팅",
+    "demo.chat.userLabel": "당신",
+    "demo.chat.assistantLabel": "어시스턴트",
+    "demo.chat.userText": "pi-i18n은 어떤 확장인가요?",
+    "demo.chat.assistantText": "pi-core를 수정하지 않고도 Pi의 TUI와 확장 기능을 다국어로 제공합니다.",
+    "demo.chat.closeHint": "Enter/Esc로 닫기",
+
     "slash.settings.description": "설정 메뉴 열기",
     "slash.model.description": "모델 선택(선택기 UI 열기)",
     "slash.scoped-models.description": "Ctrl+P 순환을 위한 모델 활성/비활성",
@@ -47,6 +54,7 @@
     "slash.changelog.description": "변경 로그 항목 표시",
     "slash.hotkeys.description": "모든 키보드 단축키 표시",
     "slash.fork.description": "이전 메시지에서 새 분기 만들기",
+    "slash.clone.description": "현재 위치에서 현재 세션 복제",
     "slash.tree.description": "세션 트리 탐색(브랜치 전환)",
     "slash.login.description": "OAuth 제공자로 로그인",
     "slash.logout.description": "OAuth 제공자에서 로그아웃",

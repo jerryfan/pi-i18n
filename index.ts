@@ -1,4 +1,6 @@
 import type { ExtensionAPI } from "@mariozechner/pi-coding-agent";
+import { DynamicBorder } from "@mariozechner/pi-coding-agent";
+import { Container, Key, matchesKey, Spacer, Text } from "@mariozechner/pi-tui";
 import { readFileSync, readdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -77,7 +79,7 @@ export default function i18nExtension(pi: ExtensionAPI): void {
 	const i18nCapabilities = {
 		contractVersion: 1,
 		capability: "pi.i18n.v1",
-		provider: "@jrryfn/pi-i18n",
+		provider: "pi-i18n",
 		apiVersion: "1.x",
 		detection: {
 			requestEvent: "pi-core/i18n/requestApi",
@@ -111,7 +113,14 @@ export default function i18nExtension(pi: ExtensionAPI): void {
 		const loaded = loadI18nConfig(cwd);
 		runtimeConfig = loaded.config ?? {};
 		const envLocale = detectLocaleFromEnv();
-		const chosen = loaded.config.locale ?? envLocale ?? "en";
+		let chosen = loaded.config.locale ?? envLocale ?? "en";
+		// Normalize common environment locale en-SG to our compact locale tag "sg".
+		try {
+			const canon = canonicalizeLocaleTag(chosen);
+			if (canon === "en-SG") chosen = "sg";
+		} catch {
+			// ignore
+		}
 		i18n.setFallbackLocale(loaded.config.fallbackLocale ?? "en");
 		i18n.setLocale(chosen);
 		ctxUi?.setHiddenThinkingLabel?.(i18n.getLocale().startsWith("zh") ? "（思考已隱藏）" : "(thinking hidden)");
@@ -203,6 +212,11 @@ export default function i18nExtension(pi: ExtensionAPI): void {
 			enus: "en-US",
 			"en-us": "en-US",
 			us: "en-US",
+			"en-sg": "sg",
+			ensg: "sg",
+			sg: "sg",
+			singapore: "sg",
+			singlish: "sg",
 
 			"zh-tw": "zh-TW",
 			zhtw: "zh-TW",
@@ -231,12 +245,56 @@ export default function i18nExtension(pi: ExtensionAPI): void {
 			"pt-br": "pt-BR",
 			portuguese: "pt-BR",
 			br: "pt-BR",
+			"pt-pt": "pt-PT",
+			ptpt: "pt-PT",
 
 			fr: "fr",
 			french: "fr",
 
 			de: "de",
 			german: "de",
+
+			it: "it",
+			italian: "it",
+
+			nl: "nl",
+			dutch: "nl",
+
+			pl: "pl",
+			polish: "pl",
+
+			tr: "tr",
+			turkish: "tr",
+
+			vi: "vi",
+			vietnamese: "vi",
+
+			id: "id",
+			indonesian: "id",
+
+			uk: "uk",
+			ukrainian: "uk",
+
+			hi: "hi",
+			hindi: "hi",
+
+			sv: "sv",
+			swedish: "sv",
+
+			da: "da",
+			danish: "da",
+
+			fi: "fi",
+			finnish: "fi",
+
+			cs: "cs",
+			czech: "cs",
+
+			ro: "ro",
+			romanian: "ro",
+
+			el: "el",
+			greek: "el",
 		};
 
 		const mapped = aliases[k1] ?? aliases[k2];
@@ -274,18 +332,60 @@ export default function i18nExtension(pi: ExtensionAPI): void {
 
 			const DISPLAY_NAMES: Record<string, string> = {
 				en: "English",
+				sg: "English (Singapore)",
 				"zh-TW": "繁體中文",
 				"zh-CN": "简体中文",
 				ja: "日本語",
 				ko: "한국어",
 				es: "Español",
 				"pt-BR": "Português (Brasil)",
+				"pt-PT": "Português (Portugal)",
 				fr: "Français",
 				de: "Deutsch",
+				it: "Italiano",
+				nl: "Nederlands",
+				pl: "Polski",
+				tr: "Türkçe",
+				vi: "Tiếng Việt",
+				id: "Bahasa Indonesia",
+				uk: "Українська",
+				hi: "हिन्दी",
+				sv: "Svenska",
+				da: "Dansk",
+				fi: "Suomi",
+				cs: "Čeština",
+				ro: "Română",
+				el: "Ελληνικά",
 			};
 
 			const curCanon = canonicalizeLocaleTag(current);
-			const ORDER = ["en", "zh-TW", "zh-CN", "ja", "ko", "es", "pt-BR", "fr", "de"];
+			const ORDER = [
+				"en",
+				"sg",
+				"zh-TW",
+				"zh-CN",
+				"ja",
+				"ko",
+				"es",
+				"pt-BR",
+				"pt-PT",
+				"fr",
+				"de",
+				"it",
+				"nl",
+				"pl",
+				"tr",
+				"vi",
+				"id",
+				"uk",
+				"hi",
+				"sv",
+				"da",
+				"fi",
+				"cs",
+				"ro",
+				"el",
+			];
 			const shipped = Array.from(shippedPiLocales);
 			const byOrder = (a: string, b: string): number => {
 				const ia = ORDER.indexOf(a);
@@ -468,6 +568,45 @@ export default function i18nExtension(pi: ExtensionAPI): void {
 		await ctx.reload();
 	}
 
+	async function showDemoChat(ctx: any): Promise<void> {
+		if (!ctx?.hasUI) return;
+
+		await ctx.ui.custom<void>((_tui: any, theme: any, _kb: any, done: (v: void) => void) => {
+			const c = new Container();
+			c.addChild(new DynamicBorder((s: string) => theme.fg("accent", s)));
+			c.addChild(new Text(theme.fg("accent", theme.bold(i18n.t("pi.demo.chat.title"))), 1, 0));
+			c.addChild(new Spacer(1));
+
+			c.addChild(new Text(theme.fg("muted", theme.bold(i18n.t("pi.demo.chat.userLabel"))), 1, 0));
+			c.addChild(new Text(theme.fg("text", i18n.t("pi.demo.chat.userText")), 1, 0));
+			c.addChild(new Spacer(1));
+
+			c.addChild(new Text(theme.fg("muted", theme.bold(i18n.t("pi.demo.chat.assistantLabel"))), 1, 0));
+			c.addChild(new Text(theme.fg("text", i18n.t("pi.demo.chat.assistantText")), 1, 0));
+			c.addChild(new Spacer(1));
+
+			c.addChild(new DynamicBorder((s: string) => theme.fg("accent", s)));
+			c.addChild(new Text(theme.fg("dim", i18n.t("pi.demo.chat.closeHint")), 1, 0));
+
+			return {
+				render: (w: number) => c.render(w),
+				invalidate: () => c.invalidate(),
+				handleInput: (data: string) => {
+					if (matchesKey(data, Key.enter) || matchesKey(data, Key.escape)) done(undefined);
+				},
+			};
+		});
+	}
+
+	async function commandDemo(rawArgs: string, ctx: any): Promise<void> {
+		const token = String(rawArgs ?? "").trim().split(/\s+/)[0]?.toLowerCase() ?? "chat";
+		if (!token || token === "chat") {
+			await showDemoChat(ctx);
+			return;
+		}
+		ctx.ui?.notify?.("Usage: /lang demo chat", "info");
+	}
+
 	async function dispatchI18nSubcommand(rawArgs: string, ctx: any): Promise<boolean> {
 		const parts = String(rawArgs ?? "").trim().split(/\s+/).filter(Boolean);
 		const sub = (parts[0] ?? "").toLowerCase();
@@ -491,6 +630,10 @@ export default function i18nExtension(pi: ExtensionAPI): void {
 		}
 		if (sub === "setup") {
 			await commandSetup(rest, ctx);
+			return true;
+		}
+		if (sub === "demo") {
+			await commandDemo(rest, ctx);
 			return true;
 		}
 		return false;

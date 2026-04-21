@@ -35,6 +35,13 @@
     "ui.header.title": "pi — 已本地化",
     "ui.header.hint": "{locale} • /lang",
 
+    "demo.chat.title": "演示对话",
+    "demo.chat.userLabel": "你",
+    "demo.chat.assistantLabel": "助手",
+    "demo.chat.userText": "你能简单说明一下 pi-i18n 是做什么的吗？",
+    "demo.chat.assistantText": "它在不修改 pi-core 的前提下，让 Pi 的终端界面与扩展支持多语言。",
+    "demo.chat.closeHint": "按 Enter/Esc 关闭",
+
     "slash.settings.description": "打开设置菜单",
     "slash.model.description": "选择模型（打开选择器）",
     "slash.scoped-models.description": "启用/停用模型（用于 Ctrl+P 循环切换）",
@@ -47,6 +54,7 @@
     "slash.changelog.description": "显示更新日志条目",
     "slash.hotkeys.description": "显示所有键盘快捷键",
     "slash.fork.description": "从之前的消息创建分叉",
+    "slash.clone.description": "在当前位置复制当前会话",
     "slash.tree.description": "浏览会话树（切换分支）",
     "slash.login.description": "使用 OAuth 提供商登录",
     "slash.logout.description": "从 OAuth 提供商登出",

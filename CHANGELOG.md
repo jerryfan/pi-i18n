@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.1.14
+- Docs: README polish + checked-in hero demo GIF asset.
+- Demo(tools/vhs): immersive montage now supports phase-order playback (settings all → chat all → hotkeys all).
+
+## 0.1.13
+- Add: `/lang demo chat` deterministic localized chat overlay (screenshot/GIF friendly).
+- Improve(core-hacks): localize `/hotkeys` Markdown output for non-zh locales (substring replacement using locale packs).
+- Add(tools/vhs): `make-immersive-stills.sh` to generate an immersive multi-locale demo (settings → demo chat → hotkeys).
+
+## 0.1.12
+- Fix(core-hacks): improve pi-core `dist/` resolution on Linux/WSL (resolve argv symlinks, probe common global npm install paths) so selector localization works reliably outside Windows.
+
+## 0.1.11
+- Change: completed the current core-settings locale pass for all shipped non-English locale packs, including selector labels, descriptions, and choice labels.
+- Change: publish bump for the latest locale-pack/core-hacks updates.
+
 ## 0.1.10
 - Change: completed the current core-settings locale pass for all shipped non-English locale packs, including selector labels, descriptions, and choice labels.
 

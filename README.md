@@ -1,50 +1,51 @@
 # pi-i18n
 
-LTR-only i18n/l10n platform for the **pi coding agent** interactive TUI and for pi extensions.
+[![npm](https://img.shields.io/npm/v/pi-i18n)](https://www.npmjs.com/package/pi-i18n)
+[![license](https://img.shields.io/npm/l/pi-i18n)](./LICENSE)
 
-- First shipped locale: **zh-TW**
-- Also shipped: **zh-CN, ja, ko, es, pt-BR, fr, de**
-- RTL: later (explicitly not supported in v1)
+LTR-only i18n/l10n platform for the **Pi coding agent** TUI and for Pi extensions.
 
-## Acknowledgements (and why this is an extension, not a pi-core PR)
+- No pi-core changes (extension-only)
+- Ships: **en, zh-TW, zh-CN, ja, ko, es, pt-BR, fr, de**
+- Also ships **stub (English) bundles** for: **it, pt-PT, nl, pl, tr, vi, id, uk, hi, sv, da, fi, cs, ro, el, sg**
+- RTL: not supported in v1 (explicitly out of scope)
 
-**pi is Mario Zechner’s work, and I’m genuinely grateful for it.** This project is my way of adding i18n support *without* barging into pi-core or demanding invasive upstream changes. In an ideal world, localization is a first-class core feature—but in the real world, maintainers have limited bandwidth, and respectful contributions should minimize disruption.
+Links:
 
-This extension is therefore a pragmatic “monkeyhack” (best-effort runtime patching) that:
-- provides a small i18n registry + bundle contract for **extensions**, and
-- optionally patches parts of the **interactive TUI** at runtime so the UI can be localized today, without forking pi or editing core files.
+- npm: https://www.npmjs.com/package/pi-i18n
+- SPEC (contract + rollout standards): `SPEC.md`
+- Demo film spec (how we make the “wow” GIFs): `DEMO.md`
+- VHS/WSL2 demo pipeline (no Docker): `VHS.md`
 
-### The funny origin story (with evidence)
+---
 
-I only started writing this because I was doing a string scan of the interactive UI to inventory hard-coded English text. While doing that, I ran into an in-app announcement that literally contains:
+## What it looks like
 
-- **“pi has joined Earendil”**
-- **“Read the blog post:”**
+Deterministic “immersive” demo loop (all locales, 3 phases):
 
-That discovery sent me to Mario’s post:
-https://mariozechner.at/posts/2026-04-08-ive-sold-out/
+1) `/settings` across all locales
+2) simulated localized chat across all locales
+3) `/hotkeys` across all locales
 
-So yes—*I found out about the acquisition announcement while hunting English strings to localize them.* That’s objectively hilarious timing.
+![Pi immersive i18n tour](https://raw.githubusercontent.com/jerryfan/pi-i18n/main/assets/pi-immersive.gif)
 
-Mario: congratulations, and thank you. I’m happy for you, and I hope the acquisition gives pi the runway it deserves.
+If this is useful to you, please star the repo. It directly influences how much time goes into expanding locale coverage.
 
-### Philosophy
+---
 
-This project is meant to be helpful, not territorial:
-- If pi grows first-class i18n upstream, I’ll happily pivot this into a thin compatibility layer (or deprecate it).
-- Until then, this extension is a practical bridge for users and extension authors who want localization now—without putting pressure on core.
+## Install
 
-## Install (npm)
-
-> Important: install with `pi install`, **not** `npm install`.
+Install with **Pi**, not npm:
 
 ```bash
-pi install npm:@jrryfn/pi-i18n
+pi install npm:pi-i18n
 ```
 
-Then restart pi (or run `/reload`).
+Then restart Pi (or run `/reload`).
 
-## Quickstart (beginner, 2 minutes)
+---
+
+## Quickstart (2 minutes)
 
 1) Apply the beginner preset:
 
@@ -52,13 +53,15 @@ Then restart pi (or run `/reload`).
 /lang setup beginner
 ```
 
-2) Switch locale if needed:
+2) Switch language (examples):
 
 ```text
 /lang zh-TW
+/lang ja
+/lang fr
 ```
 
-3) Validate health:
+3) Health checks:
 
 ```text
 /lang doctor
@@ -66,56 +69,69 @@ Then restart pi (or run `/reload`).
 /lang probe
 ```
 
-Manual happy-path verification (current release gate):
+---
 
-```text
-/settings
-/model
-/compact
-```
+## Commands (operational namespace)
 
-Expected: zh-TW UI strings, no English leakage in these paths.
-
-## Use (interactive)
-
-All i18n operational commands are under `/lang`.
+All operational controls stay under **`/lang`** (by design; command names are not localized):
 
 - `/lang` — switch UI language / pick a locale
 - `/lang doctor` — check missing keys / placeholder mismatches
 - `/lang debug` — core-hacks + slash menu diagnostics
 - `/lang probe [on|off|reset]` — runtime patch probe mode/report
-- `/lang setup beginner` — ultra-simple preset + sane defaults
-- `/lang hacks` — manual core-hacks toggle for debugging only
+- `/lang setup beginner` — sane defaults + enables core-hacks
+- `/lang demo chat` — deterministic localized demo chat (screenshot/GIF friendly)
+- `/lang hacks` — toggle core-hacks for debugging
 
-## Optional config
+---
 
-`pi-i18n` reads config from:
-- project: `<cwd>/.pi/state/pi-i18n/config.json`
-- user: `~/.pi/agent/state/pi-i18n/config.json`
+## What this extension actually does
 
-Example:
+### 1) A small i18n platform for extensions
 
-```json
-{
-  "locale": "zh-TW",
-  "fallbackLocale": "en",
-  "disableHeaderOnStartup": true,
-  "disableHeader": true,
-  "coreHacksEnabled": true,
-  "probeEnabled": true,
-  "preset": "beginner"
-}
+- bundles (`BundleV1`) + namespace/key translation API
+- extension compatibility surface (`pi-i18n/requestApi`, `pi-i18n/registerBundle`)
+- upstream-aligned aliases (`pi-core/i18n/*`) so future core i18n can replace this cleanly
+
+### 2) Best-effort Pi UI localization **without pi-core changes**
+
+Pi UI strings are not all routed through an i18n system today.
+So this project includes **core-hacks**: runtime monkeypatching against internal Pi UI render paths.
+
+Scope is intentionally conservative:
+
+- UI chrome / selectors / status / warnings / errors
+- slash command descriptions and help surfaces (e.g. `/hotkeys`)
+- never tool args/results, never model output
+
+Implementation anchor:
+
+- `src/core-hacks.ts`
+
+---
+
+## Demo media (how to regenerate the GIF)
+
+The hero GIF is produced via **stills → stitch** (not fragile sleeps):
+
+```bash
+# WSL2 recommended
+OUT=/mnt/c/trash/pi/$(date +%F)-pi-i18n-immersive-r1
+bash tools/vhs/make-immersive-stills.sh "$OUT"
+
+# outputs:
+# - $OUT/pi-immersive.gif
+# - $OUT/pi-immersive.mp4
+# - $OUT/stills/*.png
 ```
 
-- `disableHeaderOnStartup: true` → do not write localized header during `pi` startup
-- `disableHeader: true` → never write localized header (startup or later)
-- `coreHacksEnabled: true` → apply best-effort core UI localization patches
-- `probeEnabled: true` → collect runtime patch probe stats (`/lang probe`)
-- `preset` → last setup profile applied
+See `VHS.md` for WSL setup (ttyd >= 1.7.2).
+
+---
 
 ## For extension authors (no dependency)
 
-Request the API synchronously and use it in render paths:
+Request the API synchronously and translate at render time:
 
 ```ts
 let i18n: any = null;
@@ -134,47 +150,14 @@ Register bundles:
 pi.events.emit("pi-i18n/registerBundle", bundle);
 ```
 
-Future upstream compatibility (same API surface, no parallel bridge):
+Contract details + compatibility boundary:
 
-```ts
-// Optional: upstream-style detection events (supported today by this extension)
-pi.events.emit("pi-core/i18n/requestApi", { reply: (api: any, caps: any) => {/* ... */} });
-pi.events.emit("pi-core/i18n/registerBundle", bundle);
-```
+- `SPEC.md`
 
-Capability manifest is published at `i18n.manifest.json` (schema: `schemas/pi-i18n.extension.schema.json`).
+---
 
-See `SPEC.md` for the full contract.
+## Acknowledgements / intent
 
-## Translation gotchas + best practices (95+/100 playbook)
+**Pi is Mario Zechner’s work.** This project is an attempt to add localization value *without* creating churn in pi-core.
 
-Canonical implementation file for runtime translation behavior:
-- `public/pi-extensions/i18n/src/core-hacks.ts`
-
-Canonical policy/quality bar file:
-- `public/pi-extensions/i18n/SPEC.md` (scoring + safety gates)
-
-If you are adding/modifying translations, follow this order:
-1. **Patch stable sources first**
-   - Prefer key/data/method-level patches over regex-only rewrites.
-2. **Keep render width safe**
-   - TUI lines are hard width-limited; long zh-TW phrases can crash renders.
-   - In narrow menu/hint rows, prefer short high-signal strings.
-3. **Never modify pi-core files**
-   - Only patch via extension runtime hooks in `core-hacks.ts`.
-4. **Do not translate tool args/results**
-   - UI chrome/labels/status only.
-5. **Avoid control-character corruption**
-   - Regex boundaries must be `\\b` text, never literal backspace chars.
-6. **Cover dynamic render paths**
-   - Static replacements alone are insufficient for `/session`, `/hotkeys`, `/compact`.
-   - Ensure post-render localization hooks run on chat/status containers.
-7. **Verify with live runtime, not scan only**
-   - `NEED.md` is heuristic; final truth is interactive proof after `/reload` + `/lang`.
-8. **Reinstall after patching**
-   - `pi install <path-to>/pi-i18n`, then retest target commands.
-
-Quick regression set (must pass for 95+/100 confidence):
-- `/name`, `/session`, `/hotkeys`, `/compact`
-- model/settings menus (no width overflow)
-- startup + `/lang` switch (no localized header banner reintroduced)
+If pi gains first-class i18n upstream, the goal is to become a thin compatibility layer (or get out of the way entirely).

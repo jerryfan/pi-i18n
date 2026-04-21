@@ -35,6 +35,13 @@
     "ui.header.title": "pi — localisé",
     "ui.header.hint": "{locale} • /lang",
 
+    "demo.chat.title": "Chat de démo",
+    "demo.chat.userLabel": "Vous",
+    "demo.chat.assistantLabel": "Assistant",
+    "demo.chat.userText": "Peux-tu expliquer ce que fait pi-i18n ?",
+    "demo.chat.assistantText": "Il localise l’interface terminal de Pi et ses extensions — sans modifier pi-core.",
+    "demo.chat.closeHint": "Entrée/Échap pour fermer",
+
     "slash.settings.description": "Ouvrir le menu des paramètres",
     "slash.model.description": "Sélectionner un modèle (ouvre le sélecteur)",
     "slash.scoped-models.description": "Activer/désactiver des modèles pour le cycle Ctrl+P",
@@ -47,6 +54,7 @@
     "slash.changelog.description": "Afficher les entrées du changelog",
     "slash.hotkeys.description": "Afficher tous les raccourcis clavier",
     "slash.fork.description": "Créer un nouveau fork depuis un message précédent",
+    "slash.clone.description": "Dupliquer la session actuelle à la position actuelle",
     "slash.tree.description": "Naviguer dans l’arbre de session (changer de branche)",
     "slash.login.description": "Se connecter via un fournisseur OAuth",
     "slash.logout.description": "Se déconnecter du fournisseur OAuth",

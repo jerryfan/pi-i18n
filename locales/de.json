@@ -35,6 +35,13 @@
     "ui.header.title": "pi — lokalisiert",
     "ui.header.hint": "{locale} • /lang",
 
+    "demo.chat.title": "Demo-Chat",
+    "demo.chat.userLabel": "Du",
+    "demo.chat.assistantLabel": "Assistent",
+    "demo.chat.userText": "Kannst du kurz erklären, was pi-i18n macht?",
+    "demo.chat.assistantText": "Es lokalisiert Pis Terminal-UI und Erweiterungen – ohne Änderungen an pi-core.",
+    "demo.chat.closeHint": "Enter/Esc zum Schließen",
+
     "slash.settings.description": "Einstellungsmenü öffnen",
     "slash.model.description": "Modell auswählen (öffnet den Selector)",
     "slash.scoped-models.description": "Modelle für Ctrl+P-Zyklus aktivieren/deaktivieren",
@@ -47,6 +54,7 @@
     "slash.changelog.description": "Changelog-Einträge anzeigen",
     "slash.hotkeys.description": "Alle Tastenkürzel anzeigen",
     "slash.fork.description": "Neuen Fork aus einer früheren Nachricht erstellen",
+    "slash.clone.description": "Die aktuelle Sitzung an der aktuellen Position duplizieren",
     "slash.tree.description": "Session-Baum navigieren (Branches wechseln)",
     "slash.login.description": "Mit OAuth-Anbieter anmelden",
     "slash.logout.description": "Vom OAuth-Anbieter abmelden",

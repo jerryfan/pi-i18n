@@ -32,7 +32,7 @@ npm publish
 
 Notes:
 - Package is a **pi extension**. Users install with:
-  - `pi install npm:@jrryfn/pi-i18n`
+  - `pi install npm:pi-i18n`
 - `publishConfig.access=public` is set; publishing should not require extra flags.
 
 ## 3) Tag + GitHub release
@@ -40,4 +40,4 @@ Notes:
 - Tag: `v<version>`
 - GitHub release notes: paste the relevant `CHANGELOG.md` section
 - Include install snippet:
-  - `pi install npm:@jrryfn/pi-i18n`
+  - `pi install npm:pi-i18n`

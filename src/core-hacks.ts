@@ -1,6 +1,6 @@
 import type { I18nApi } from "./types";
-import { CombinedAutocompleteProvider, Loader } from "@mariozechner/pi-tui";
-import { existsSync, readFileSync, readdirSync } from "node:fs";
+import { CombinedAutocompleteProvider, Loader, truncateToWidth, visibleWidth } from "@mariozechner/pi-tui";
+import { existsSync, readFileSync, readdirSync, realpathSync } from "node:fs";
 import { getProbeSnapshot, probeHit, probeHook, resetProbe, setProbeEnabled } from "./probe";
 import { homedir } from "node:os";
 import { dirname, join, resolve } from "node:path";
@@ -111,7 +111,14 @@ function findPiCodingAgentDistDir(): string | null {
 	const probeFromFile = (filePath: string): string | null => {
 		try {
 			if (!filePath) return null;
-			const d = dirname(filePath);
+			// argv often contains symlinks (e.g. /usr/bin/pi -> .../dist/cli.js). Resolve so we can find dist.
+			let fp = filePath;
+			try {
+				fp = realpathSync(filePath);
+			} catch {
+				// ignore
+			}
+			const d = dirname(fp);
 			for (let up = 0; up <= 6; up++) {
 				const root = resolve(d, ...Array(up).fill(".."));
 				const distDir = join(root, "dist");
@@ -154,6 +161,24 @@ function findPiCodingAgentDistDir(): string | null {
 		if (looksLikeDist(distDir)) {
 			setCoreDist(distDir);
 			return distDir;
+		}
+	} catch {
+		// ignore
+	}
+
+	// 4) Global npm install location (Linux/macOS)
+	try {
+		const candidates: string[] = [];
+		// Debian/Ubuntu global npm prefix (common in containers/WSL when installed via apt/npm as root)
+		candidates.push(join("/usr", "lib", "node_modules", "@mariozechner", "pi-coding-agent", "dist"));
+		candidates.push(join("/usr", "local", "lib", "node_modules", "@mariozechner", "pi-coding-agent", "dist"));
+		// npm --prefix ~/.local
+		candidates.push(join(homedir(), ".local", "lib", "node_modules", "@mariozechner", "pi-coding-agent", "dist"));
+		for (const distDir of candidates) {
+			if (looksLikeDist(distDir)) {
+				setCoreDist(distDir);
+				return distDir;
+			}
 		}
 	} catch {
 		// ignore
@@ -392,13 +417,25 @@ const ZH_TW_PARITY_SAMPLES: string[] = [
 	"Quiet startup",
 ];
 
+const EXACT_WHOLE_LINE_ONLY_KEYS = new Set(["Yes", "No"]);
+
 function applyExactMap(s: string, exact?: Record<string, string>): string {
 	if (!exact) return s;
+
+	// Guard against partial/mixed translations: short generic tokens like "Yes"/"No"
+	// should not be replaced as substrings inside longer sentences.
+	if (EXACT_WHOLE_LINE_ONLY_KEYS.has(s) && typeof exact[s] === "string") {
+		return exact[s] as string;
+	}
+
 	const entries = Object.entries(exact)
 		.filter(([from, to]) => typeof from === "string" && typeof to === "string" && from.length > 0 && from !== to)
 		.sort((a, b) => b[0].length - a[0].length);
 	let out = s;
-	for (const [from, to] of entries) out = out.replaceAll(from, to);
+	for (const [from, to] of entries) {
+		if (EXACT_WHOLE_LINE_ONLY_KEYS.has(from)) continue;
+		out = out.replaceAll(from, to);
+	}
 	return out;
 }
 
@@ -476,6 +513,14 @@ function tCoreLegacyZhTw(i18n: I18nApi, msg: string): string {
 		// selector/settings/core UI
 		"(cancelled)": "（已取消）",
 		"Branch summary (": "分支摘要（",
+		"branch summary": "分支摘要",
+		"[branch summary]: ": "[分支摘要]：",
+		"Summarize branch?": "要摘要分支嗎？",
+		"No summary": "不摘要",
+		"Summarize": "摘要",
+		"Summarize with custom prompt": "使用自訂提示摘要",
+		"Custom summarization instructions": "自訂摘要指示",
+		"Summarizing branch... (escape to cancel)": "正在摘要分支...（escape 可取消）",
 		" to expand)": "可展開）",
 		"Resource Configuration": "資源設定",
 		"Type to filter resources": "輸入以篩選資源",
@@ -919,7 +964,20 @@ function tCoreLegacyZhTw(i18n: I18nApi, msg: string): string {
 }
 
 function tUiLine(i18n: I18nApi, line: string): string {
-	return tSelector(i18n, tCore(i18n, line));
+	const input = String(line ?? "");
+	const translated = tSelector(i18n, tCore(i18n, input));
+	if (translated === input) return translated;
+
+	// Keep translated UI lines within the original rendered width so localization
+	// cannot overflow a line that the upstream component already sized and truncated.
+	// This is especially important for narrow terminals and wide translations.
+	if (!translated.includes("\n")) {
+		const inputWidth = visibleWidth(input);
+		if (inputWidth >= 0 && visibleWidth(translated) > inputWidth) {
+			return truncateToWidth(translated, inputWidth, "…");
+		}
+	}
+	return translated;
 }
 
 function tSelectorLegacyZhTw(i18n: I18nApi, line: string): string {
@@ -960,8 +1018,9 @@ function tSelectorLegacyZhTw(i18n: I18nApi, line: string): string {
 	s = s.replaceAll(" scope", " 範圍");
 	s = s.replaceAll(" sort", " 排序");
 	s = s.replaceAll(" named", " 命名");
-	s = s.replaceAll(" delete", " 刪除");
-	s = s.replaceAll(" rename", " 重新命名");
+	s = s.replaceAll("Cycle through the deleted text after pasting", "貼上後循環切換刪除歷史");
+	s = s.replace(/\bdelete\b/g, "刪除");
+	s = s.replace(/\brename\b/g, "重新命名");
 	s = s.replaceAll("path (on)", "路徑（開）");
 	s = s.replaceAll("path (off)", "路徑（關）");
 
@@ -1035,7 +1094,6 @@ function tSelectorLegacyZhTw(i18n: I18nApi, line: string): string {
 	s = s.replaceAll("Delete to start of line", "刪至行首");
 	s = s.replaceAll("Delete to end of line", "刪至行尾");
 	s = s.replaceAll("Paste the most-recently-deleted text", "貼上最近刪除的文字");
-	s = s.replaceAll("Cycle through the deleted text after pasting", "貼上後循環切換刪除歷史");
 	s = s.replaceAll("Undo", "復原");
 	s = s.replaceAll("Path completion / accept autocomplete", "路徑補全／接受自動完成");
 	s = s.replaceAll("Cancel autocomplete / abort streaming", "取消自動完成／中止串流");
@@ -1149,6 +1207,7 @@ const ZH_TW_BUILTIN_SLASH_DESC_BY_NAME: Record<string, string> = {
 	"changelog": "顯示更新紀錄",
 	"hotkeys": "顯示所有鍵盤快捷鍵",
 	"fork": "從先前訊息建立新分岔",
+	"clone": "在目前位置複製目前工作階段",
 	"tree": "瀏覽工作階段樹（切換分支）",
 	"login": "使用 OAuth 供應商登入",
 	"logout": "登出 OAuth 供應商",
@@ -1234,6 +1293,7 @@ function tSlashDesc(i18n: I18nApi, item: any): string | undefined {
 		s = s.replaceAll("Show changelog entries", "顯示更新紀錄");
 		s = s.replaceAll("Show all keyboard shortcuts", "顯示所有鍵盤快捷鍵");
 		s = s.replaceAll("Create a new fork from a previous message", "從先前訊息建立新分岔");
+		s = s.replaceAll("Duplicate the current session at the current position", "在目前位置複製目前工作階段");
 		s = s.replaceAll("Navigate session tree (switch branches)", "瀏覽工作階段樹（切換分支）");
 		s = s.replaceAll("Login with OAuth provider", "使用 OAuth 供應商登入");
 		s = s.replaceAll("Logout from OAuth provider", "登出 OAuth 供應商");
@@ -1246,8 +1306,23 @@ function tSlashDesc(i18n: I18nApi, item: any): string | undefined {
 	return tCore(i18n, s);
 }
 
+const NEVER_LOCALIZE_TEXT_TREE_COMPONENTS = new Set([
+	// Transcript/message payload components (must remain verbatim)
+	"AssistantMessageComponent",
+	"UserMessageComponent",
+	"ToolExecutionComponent",
+	"BashExecutionComponent",
+	"CustomMessageComponent",
+	"SkillInvocationMessageComponent",
+	"BranchSummaryMessageComponent",
+	"CompactionSummaryMessageComponent",
+]);
+
 function localizeTextTree(node: any, api: I18nApi): void {
 	try {
+		const ctorName = node?.constructor?.name;
+		if (ctorName && NEVER_LOCALIZE_TEXT_TREE_COMPONENTS.has(ctorName)) return;
+
 		if (node?.setText && typeof node?.getText === "function") {
 			const cur = node.getText();
 			const next = tUiLine(api, cur);
@@ -1259,6 +1334,56 @@ function localizeTextTree(node: any, api: I18nApi): void {
 		}
 		const children: any[] = node?.children ?? [];
 		for (const c of children) localizeTextTree(c, api);
+	} catch {
+		// ignore
+	}
+}
+
+function applySubstrMapSorted(input: string, map: Record<string, string>): string {
+	let out = String(input ?? "");
+	const entries = Object.entries(map ?? {}).filter(([k, v]) => !!k && typeof v === "string" && v.length > 0);
+	// Replace longest keys first to avoid partial replacements eating longer phrases.
+	entries.sort((a, b) => (b[0]?.length ?? 0) - (a[0]?.length ?? 0));
+	for (const [k, v] of entries) {
+		try {
+			out = out.replaceAll(k, v);
+		} catch {
+			// ignore
+		}
+	}
+	return out;
+}
+
+function localizeHotkeysMarkdown(chatContainer: any, api: I18nApi): void {
+	try {
+		if (!chatContainer || !api) return;
+		const pack = getCoreHackPack(api.getLocale());
+		if (!pack) return;
+		const children: any[] = chatContainer?.children ?? [];
+		if (!Array.isArray(children) || children.length === 0) return;
+
+		for (let i = children.length - 1; i >= 0; i--) {
+			const n = children[i];
+			const ctor = n?.constructor?.name;
+			if (ctor !== "Markdown") continue;
+			const cur = typeof n?.text === "string" ? (n.text as string) : "";
+			if (!cur) continue;
+			// Heuristic anchor: core /hotkeys Markdown contains this phrase.
+			if (!cur.includes("Move cursor / browse history")) continue;
+
+			const next = applySubstrMapSorted(cur, pack.exact);
+			if (next !== cur && typeof n?.setText === "function") {
+				n.setText(next);
+			} else if (next !== cur) {
+				n.text = next;
+				try {
+					n.invalidate?.();
+				} catch {
+					// ignore
+				}
+			}
+			return;
+		}
 	} catch {
 		// ignore
 	}
@@ -1386,6 +1511,7 @@ function patchRenderableComponent(component: any): void {
 	const proto = component?.constructor?.prototype;
 	const ctorName = component?.constructor?.name ?? "component";
 	if (!proto?.render) return;
+	if (NEVER_LOCALIZE_TEXT_TREE_COMPONENTS.has(ctorName)) return;
 	patchOnce(proto, `generic_render_${ctorName}`, () => {
 		const orig = proto.render;
 		proto.render = function patchedRender(width: number) {
@@ -1474,14 +1600,40 @@ export async function installCoreHacks(i18n: I18nApi): Promise<{ ok: boolean; re
 				},
 			);
 			patchMethod(InteractiveMode.prototype, "showExtensionSelector", (orig) =>
-				function patchedShowExtensionSelector(this: any, title: string, options: any[], opts: any) {
+				async function patchedShowExtensionSelector(this: any, title: string, options: any[], opts: any) {
 					const api = getCurrentI18n();
 					if (!api) return orig.call(this, title, options, opts);
 					const tTitle = tUiLine(api, title);
-					const tOpts = Array.isArray(options)
-						? options.map((o: any) => (typeof o === "string" ? tUiLine(api, o) : o))
-						: options;
-					return orig.call(this, tTitle, tOpts, opts);
+					if (!Array.isArray(options) || options.some((o: any) => typeof o !== "string")) {
+						return orig.call(this, tTitle, options, opts);
+					}
+
+					// Preserve a stable internal identity for every option while still showing
+					// localized text in the selector. This avoids brittle reverse-mapping by
+					// translated string equality and keeps command logic language-agnostic.
+					const wrappedOptions = options.map((original: string) => {
+						const translated = tUiLine(api, original);
+						return {
+							original,
+							translated,
+							toString() {
+								return translated;
+							},
+							valueOf() {
+								return translated;
+							},
+						};
+					});
+
+					const chosen = await orig.call(this, tTitle, wrappedOptions, opts);
+					if (chosen && typeof chosen === "object" && typeof (chosen as any).original === "string") {
+						return (chosen as any).original;
+					}
+					if (typeof chosen === "string") {
+						const match = wrappedOptions.find((p) => p.translated === chosen);
+						return match?.original ?? chosen;
+					}
+					return chosen;
 				},
 			);
 			patchMethod(InteractiveMode.prototype, "showExtensionConfirm", (orig) =>
@@ -1513,7 +1665,6 @@ export async function installCoreHacks(i18n: I18nApi): Promise<{ ok: boolean; re
 					try {
 						const cur = getCurrentI18n();
 						if (cur) {
-							localizeTextTree(this.chatContainer, cur);
 							localizeTextTree(this.statusContainer, cur);
 						}
 					} catch {
@@ -1527,7 +1678,7 @@ export async function installCoreHacks(i18n: I18nApi): Promise<{ ok: boolean; re
 					const result = orig.call(this, cmd);
 					try {
 						const api = getCurrentI18n();
-						if (api) localizeTextTree(this.chatContainer, api);
+						if (api) localizeTextTree(this.statusContainer, api);
 					} catch {
 						// ignore
 					}
@@ -1539,7 +1690,7 @@ export async function installCoreHacks(i18n: I18nApi): Promise<{ ok: boolean; re
 					const result = orig.apply(this, args as any);
 					try {
 						const api = getCurrentI18n();
-						if (api) localizeTextTree(this.chatContainer, api);
+						if (api) localizeTextTree(this.statusContainer, api);
 					} catch {
 						// ignore
 					}
@@ -1551,7 +1702,12 @@ export async function installCoreHacks(i18n: I18nApi): Promise<{ ok: boolean; re
 					const result = orig.apply(this, args as any);
 					try {
 						const api = getCurrentI18n();
-						if (api) localizeTextTree(this.chatContainer, api);
+						if (api) {
+							localizeTextTree(this.chatContainer, api);
+							// /hotkeys emits one big Markdown blob; packs are exact-match maps, so we translate
+							// the Markdown content via substring replacements (safe: this is a core-owned blob).
+							localizeHotkeysMarkdown(this.chatContainer, api);
+						}
 					} catch {
 						// ignore
 					}
