@@ -551,7 +551,9 @@ export default function i18nExtension(pi: ExtensionAPI): void {
 			return;
 		}
 		const envRaw = detectLocaleFromEnv();
-		const env = envRaw ? canonicalizeLocaleTag(envRaw) : "";
+		let env = envRaw ? canonicalizeLocaleTag(envRaw) : "";
+		// Keep setup aligned with our Singaporean English tag.
+		if (env === "en-SG") env = "sg";
 		const envLang = env.split("-")[0] ?? env;
 		const preferred = shippedPiLocales.has(env) ? env : shippedPiLocales.has(envLang) ? envLang : "";
 		const locale = preferred || (env && env.toLowerCase().startsWith("zh") ? "zh-TW" : i18n.getLocale().startsWith("zh") ? "zh-TW" : "en");
