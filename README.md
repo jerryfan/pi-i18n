@@ -220,7 +220,8 @@ The hero GIF is produced via **stills → stitch** (not fragile sleeps):
 
 ```bash
 # WSL2 recommended
-OUT=/mnt/c/trash/pi/$(date +%F)-pi-i18n-immersive-r1
+OUT="$HOME/tmp/pi-i18n-immersive-$(date +%F)-r1"
+mkdir -p "$OUT"
 bash tools/vhs/make-immersive-stills.sh "$OUT"
 
 # outputs:

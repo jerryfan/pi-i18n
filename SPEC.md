@@ -2,15 +2,9 @@
 id: pi-i18n
 title: pi-i18n (pi extension) — SPEC
 version: 0.1.4
-status: draft
-owner: jerry
-created_at: 2026-04-19
-updated_at: 2026-04-20
-review_due: 2026-05-19
-change_policy: minor
-source_of_truth: true
+status: public
+updated_at: 2026-04-26
 tags: [pi, extension, i18n, l10n, localization, ltr]
-risk_tier: low
 distribution: public
 ---
 
@@ -298,7 +292,7 @@ To maintain ≥95/100 UX coverage without waiting for upstream hooks, `pi-i18n` 
 ### 7.6.2 Hard rule: runtime stays lightweight
 - Runtime MUST NOT parse the full core codebase.
 - Runtime MAY validate that expected patch points still exist (probe), and MUST fail closed.
-- Heavy discovery work MUST be invoked explicitly (dev command/script) and write outputs to `c:\trash\<repo>\...`.
+- Heavy discovery work MUST be invoked explicitly (dev command/script) and write outputs to a local temp/output directory (e.g. `/tmp/<repo>/...` or `~/tmp/<repo>/...`).
 
 ### 7.6.3 Inputs
 Adaptation tooling MUST accept the resolved absolute dist roots:
