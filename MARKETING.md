@@ -58,11 +58,21 @@ Use this practical scale:
 
 Work highest score first.
 
-## Language-market fit tactic
+## Western-first language-market fit tactic
 
-Do not blindly lead with zh-TW, zh-CN, Korean, or any fixed language set.
+Default future outreach is **Western-language-first** unless explicit repo/product/community evidence says otherwise.
 
-Default future outreach should prefer evidenced communication-language signals first: repo docs/comments/examples, issue/PR language, package audience, maintainer-stated preferences, community usage, and product geography. When no explicit signal exists, use broad language-market fit (`es`, `fr`, `pt-BR`, `it`) for developer UX and reviewability. Choose languages that are plausible for **that extension's user base**.
+Preferred default set when no explicit signal exists:
+
+1. `es`
+2. `fr`
+3. `pt-BR`
+4. `it`
+5. `de` for infra/devtool/status/config-heavy packages where German developer-market fit is especially plausible
+
+Do **not** lead with `ja`, `zh-CN`, `zh-TW`, or `ko` by habit. Those locales require explicit support such as repo docs/comments/examples, issue/PR traffic, maintainer-stated preference, product geography, service audience, screenshots/demo text, or community requests. If that support is absent, using East Asian locales fails the campaign gate.
+
+Choose languages that are plausible for **that extension's user base**, but the no-signal fallback is Western languages for developer UX, reviewability, and lower perceived drive-by translation risk.
 
 Language selection inputs:
 
@@ -79,9 +89,9 @@ Examples:
 
 | Extension type | Better first languages |
 |---|---|
-| coding/model/devtool | `es`, `fr`, `pt-BR`, `it`; add `de` for German-heavy tooling signals |
-| local Chinese service/API | `zh-TW` by default; use `zh-CN` only with explicit repo/product signal |
-| Korea-specific/API package | `ko`, then `en` polish |
+| coding/model/devtool | `es`, `fr`, `pt-BR`, `it`; add `de` for config/status-heavy tooling |
+| local Chinese service/API | `zh-TW` or `zh-CN` only with explicit repo/product/community signal |
+| Korea-specific/API package | `ko` only with explicit product/community signal; otherwise use Western default |
 | Europe/productivity package | `de`, `fr`, `es`, `pt-BR` |
 | broad beginner UX package | `es`, `fr`, `pt-BR`, `it` |
 | docs-heavy troubleshooting tool | languages matching issue traffic |
@@ -89,11 +99,14 @@ Examples:
 Default first offer when no signal exists:
 
 - `es`
+- `fr`
 - `pt-BR`
-- `zh-TW`
-- `ja`
 
-Use `zh-TW` or `ko` first only when repo/content signals make them likely valuable.
+Optional fourth locale: `it` or `de`, chosen by extension fit.
+
+Use `ja`, `zh-CN`, `zh-TW`, or `ko` only when repo/content/community signals make them likely valuable. Record the exact signal in the tracker before implementation.
+
+Hard gate: before editing, write `locale rationale` as `western default` or `explicit signal: <evidence>`. If East Asian locales are selected without an explicit signal, stop and revise.
 
 ## Pain-point led PR tactic
 
@@ -273,9 +286,9 @@ Best shape:
 
 ```txt
 README.md
-README.zh-TW.md
-README.ja.md
-README.de.md
+README.es.md
+README.fr.md
+README.pt-BR.md
 ```
 
 Or, if maintainer prefers one file:
@@ -284,9 +297,9 @@ Or, if maintainer prefers one file:
 ## Languages
 
 - [English](#readme)
-- [日本語](./README.ja.md)
-- [繁體中文](./README.zh-TW.md)
-- [Deutsch](./README.de.md)
+- [Español](./README.es.md)
+- [Français](./README.fr.md)
+- [Português brasileiro](./README.pt-BR.md)
 ```
 
 Page-localization PR pitch:
@@ -296,7 +309,7 @@ The extension now has a clear setup path, but the package page is still English-
 
 - No code changes
 - English README unchanged
-- Adds concise ja/zh-TW/de README variants
+- Adds concise es/fr/pt-BR README variants
 - Focuses on install, setup, and core safety/cost claims
 ```
 
@@ -328,7 +341,7 @@ Register bundles only when useful:
 pi.events.emit("pi-core/i18n/registerBundle", localeBundle);
 ```
 
-Start with 1-3 languages selected by language-market fit. Do not submit 20 generated locale files in a first PR.
+Start with 1-3 Western-default languages (`es`, `fr`, `pt-BR`) unless explicit evidence supports another set. Do not submit 20 generated locale files in a first PR.
 
 ## PR title template
 
@@ -442,6 +455,7 @@ rg -n "registerCommand|description|ctx\.ui|select\(|input\(|confirm\(|notify\(|l
    - issue response style
    - explicit non-English repo content
    - likely user geography from service/domain/docs
+   - if no explicit signal: use Western default (`es`, `fr`, `pt-BR`)
 7. Decide disposition:
    - `target`
    - `defer`
@@ -456,7 +470,7 @@ namespace:
 pain point found:
 evidence URL/file/line:
 strings to wrap:
-locale rationale:
+locale rationale: western default OR explicit signal with evidence
 locales:
 files touched:
 expected LOC:

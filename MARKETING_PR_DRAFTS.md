@@ -78,9 +78,9 @@ The README explains a real cost issue: MCP definitions can burn 10k+ tokens befo
 
 Page scope:
 
-- `README.ja.md`
-- `README.zh-TW.md`
-- `README.de.md`
+- `README.es.md`
+- `README.fr.md`
+- `README.pt-BR.md`
 - small language links in `README.md`
 
 ## pi-subagents

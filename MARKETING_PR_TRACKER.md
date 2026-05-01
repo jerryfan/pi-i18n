@@ -78,7 +78,7 @@ Track pi extension localization PR outreach and outcomes.
 - `pain_point`: specific UX blind spot, not generic "needs translation".
 - `evidence`: repo URL, file path, line, issue, README section, screenshot, or package-card signal.
 - `locale_rationale`: why these locales fit this extension's likely users.
-- For future outreach, prefer evidenced repo/product/community communication-language signals first. If no explicit signal exists, use broad language-market fit (`es`, `fr`, `pt-BR`, `it`) for developer UX and reviewability. Prefer `zh-TW` over `zh-CN` when Chinese is explicitly justified. Preserve submitted PR locale facts as historical records.
+- For future outreach, prefer Western-default locales (`es`, `fr`, `pt-BR`; optional `it`/`de` by fit) unless explicit repo/product/community evidence supports another set. East Asian locales (`ja`, `zh-CN`, `zh-TW`, `ko`) require recorded explicit evidence before implementation. Preserve submitted PR locale facts as historical records.
 - `maintainer_language_signal`: explicit communication-language signal only: repo docs/comments/examples, issue/PR language, maintainer-stated language, package audience, community usage, or product geography.
 - `page_pr_candidate`: use aggressively after runtime PRs; separate docs/page PRs are a second low-risk touchpoint.
 - `page_pain_point`: why the public package page blocks evaluation, trust, install, or correct setup.
