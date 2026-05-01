@@ -108,6 +108,29 @@ Use `ja`, `zh-CN`, `zh-TW`, or `ko` only when repo/content/community signals mak
 
 Hard gate: before editing, write `locale rationale` as `western default` or `explicit signal: <evidence>`. If East Asian locales are selected without an explicit signal, stop and revise.
 
+## Regression lessons from historic submissions
+
+Major regressions to prevent:
+
+- **Locale drift to mean**: early PRs reused `ja/zh-CN/es` or `ja/zh-TW/de` without explicit evidence. Future default is `es/fr/pt-BR`; East Asian locales require recorded evidence.
+- **Pain-point dilution**: some PRs wrapped adjacent generic status/help strings. Keep the first PR anchored to a concrete consequence: wrong approval, wrong config, failed setup, leaked data, wasted context, or wrong model/tool choice.
+- **Scope creep**: whole-extension PRs are good only when the string surface is compact. Do not expand into generated UI, bundled assets, large docs, or unrelated settings.
+- **Validation inconsistency**: some repos had local environment failures. Always separate passed checks from blocked checks and state the blocker precisely; never imply full suite passed if it did not.
+- **Tracker as history vs spec**: submitted PR rows preserve historical facts, even bad locale choices. Future rules live in `MARKETING.md` and tracker discipline notes.
+- **Over-broad target discovery**: package-card evidence is enough for ledger intake, not enough for PR implementation. Before implementation, verify exact file paths and strings.
+- **Maintainer-risk language**: avoid “global users” or broad localization claims. Frame as one small UX/safety fix with English fallback and no dependency.
+
+Pre-implementation hard gate:
+
+```txt
+locale rationale: western default OR explicit signal with evidence
+pain consequence: wrong approval/config/setup/privacy/model/context/etc.
+exact strings/files:
+first PR shape: pain-point runtime / compact whole-extension / page-only
+validation plan:
+checks expected to be blocked:
+```
+
 ## Pain-point led PR tactic
 
 Do not pitch "translation" first.
