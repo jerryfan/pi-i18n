@@ -28,7 +28,7 @@ This PR makes that path optionally localizable while preserving the current Engl
 - No new dependency
 - No behavior change without an i18n provider
 - English remains the default/fallback
-- Locales: ja, zh-TW, de — large developer markets for dense setup/error copy
+- Locales: es, fr, pt-BR — large developer markets for dense setup/error copy
 - Small diff; easy to revert
 ```
 
@@ -72,7 +72,7 @@ The README explains a real cost issue: MCP definitions can burn 10k+ tokens befo
 
 - No code changes
 - English README unchanged
-- Adds concise ja/zh-TW/de quickstarts
+- Adds concise es/fr/pt-BR quickstarts
 - Focuses only on why this exists, install, setup, and reconnect/auth basics
 ```
 
@@ -93,7 +93,7 @@ Clarification/delegation UI is the pain point. Wrongly understood subagent choic
 
 ### Likely locales
 
-`ja`, `zh-TW`, `es` unless repo evidence suggests otherwise.
+`es`, `fr`, `pt-BR` unless repo evidence suggests otherwise.
 
 ## context-mode
 
@@ -105,4 +105,4 @@ Context-saving commands and diagnostics are high-stakes because misunderstood in
 
 ### Likely locales
 
-`ja`, `zh-TW`, `es` unless repo evidence suggests otherwise.
+`es`, `fr`, `pt-BR` unless repo evidence suggests otherwise.

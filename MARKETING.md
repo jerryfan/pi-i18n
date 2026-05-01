@@ -62,7 +62,7 @@ Work highest score first.
 
 Do not blindly lead with zh-TW, zh-CN, Korean, or any fixed language set.
 
-Choose languages that are plausible for **that extension's user base**.
+Default future outreach should prefer Latin-derived locales (`es`, `fr`, `pt-BR`, `it`) for broad developer UX, based on language-market coverage and review familiarity—not maintainer ethnicity, name, avatar, or ancestry. Choose languages that are plausible for **that extension's user base**.
 
 Language selection inputs:
 
@@ -79,11 +79,11 @@ Examples:
 
 | Extension type | Better first languages |
 |---|---|
-| coding/model/devtool | `ja`, `zh-TW`, `de`, `fr`, `es` |
+| coding/model/devtool | `es`, `fr`, `pt-BR`, `it`; add `de` for German-heavy tooling signals |
 | local Chinese service/API | `zh-TW` by default; use `zh-CN` only with explicit repo/product signal |
 | Korea-specific/API package | `ko`, then `en` polish |
 | Europe/productivity package | `de`, `fr`, `es`, `pt-BR` |
-| broad beginner UX package | `es`, `pt-BR`, `zh-TW`, `ja` |
+| broad beginner UX package | `es`, `fr`, `pt-BR`, `it` |
 | docs-heavy troubleshooting tool | languages matching issue traffic |
 
 Default first offer when no signal exists:
@@ -144,14 +144,14 @@ Allowed signals:
 - code comments/docs in a non-English language
 - package description or examples targeting a region/language
 
-Do **not** infer native language from name, avatar, ethnicity, or location alone.
+Do **not** infer native language from name, avatar, ethnicity, ancestry, descent, or location alone.
 
 If repo has clear non-English signals, include one short courtesy line in that language, then keep the technical PR body in English.
 
 Example:
 
 ```md
-I noticed explicit Chinese-language usage context in the repo, so I selected the Chinese locale that matches that signal; without a stronger signal, prefer zh-TW over zh-CN.
+I noticed explicit Chinese-language usage context in the repo, so I selected the Chinese locale that matches that signal. Without such a signal, default future outreach now prefers Latin-derived locales (`es`, `fr`, `pt-BR`, `it`) for broad reviewability.
 ```
 
 ## PR design rules
