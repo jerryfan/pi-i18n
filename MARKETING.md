@@ -146,6 +146,42 @@ same-maintainer open PR count:
 feedback harvested from prior PRs:
 ```
 
+## Campaign readiness rubric
+
+Do not continue submissions unless readiness is **95+/100**.
+
+Score each campaign batch before opening PRs:
+
+| Gate | Points | 95+ requirement |
+|---|---:|---|
+| Locale discipline | 20 | Every PR uses `western default` or explicit locale evidence; no unsupported East Asian locales. |
+| Pain specificity | 20 | Every PR names one concrete failure mode and exact strings/files. |
+| Maintainer context | 15 | No stacked PRs to same maintainer without positive signal; PR body is repo-specific. |
+| Scope control | 15 | Smallest high-risk surface only; no generated files; no adjacent string creep. |
+| Validation honesty | 10 | Passed and blocked checks are separated; blockers are precise. |
+| Optionality/revertability | 10 | No dependency, English fallback, easy deletion path stated. |
+| Feedback loop | 10 | Prior maintainer reactions reviewed before similar submissions. |
+
+Automatic stop conditions:
+
+- any unsupported East Asian locale
+- more than one open campaign PR to the same maintainer without positive response
+- PR body could be pasted into another repo unchanged
+- package-card evidence is the only implementation evidence
+- generated/bundled files required
+- tests fail due touched code and no fix is available
+- optional service offer feels like sales or pressure
+
+Current self-rating after retraction cleanup: **88/100**.
+
+Known gaps before more submissions:
+
+- Historical tracker rows still contain retracted bad-locale facts; acceptable as history, but future candidate rows need stricter `western default` wording.
+- Need a visible PR preflight record for each new implementation.
+- Need same-maintainer open-PR counter before submit.
+- Need feedback-harvest step before resubmitting to previously contacted maintainers.
+- Need a rule to prefer safety/privacy/HITL targets while trust is being rebuilt.
+
 ## Pain-point led PR tactic
 
 Do not pitch "translation" first.
@@ -537,13 +573,14 @@ rg -n "registerCommand|description|ctx\.ui|select\(|input\(|confirm\(|notify\(|l
 
 ### 3. Plan tiny PR
 
-Before editing, define:
+Before editing, define and paste into the tracker or scratch notes:
 
 ```txt
 namespace:
 pain point found:
 evidence URL/file/line:
 strings to wrap:
+why these strings, not adjacent strings:
 locale rationale: western default OR explicit signal with evidence
 locales:
 files touched:
@@ -551,9 +588,13 @@ expected LOC:
 risk:
 fallback behavior:
 maintainer value claim:
+same-maintainer open PR count:
+feedback harvested:
+optional service footer: omit / compressed / full, with reason
+readiness score:
 ```
 
-Reject the PR if it requires invasive architecture change.
+Reject the PR if it requires invasive architecture change or scores below 95.
 
 ### 4. Implement
 
