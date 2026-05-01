@@ -210,6 +210,42 @@ This keeps English as the fallback/default and only adds localized labels, promp
 - Covers the full extension UI surface, not generated files
 ```
 
+## PR scope ladder
+
+Choose the smallest scope that is still obviously useful:
+
+1. **Pain-point runtime PR**: setup/auth/error/destructive/decision strings only.
+2. **Package-page PR**: README/package page install and decision path only.
+3. **Entire extension localization PR**: all user-facing extension strings plus docs/page translations.
+
+Use entire-extension localization aggressively when the extension is small, string surface is coherent, tests are available, and the diff stays reviewable. Do not split artificially if the whole extension is only one or two files of user-facing copy.
+
+Entire-extension PR rules:
+
+- no generated files
+- no broad formatting
+- no dependency requirement
+- English fallback unchanged
+- all user-facing strings in one namespace
+- locale bundles limited to selected locales
+- README/page translation included only if concise
+- PR body lists exact surfaces localized
+- avoid translating internal identifiers, tool names, config keys, commands, and code examples unless they are explanatory prose
+
+Entire-extension pitch:
+
+```md
+I found the extension's user-facing string surface is small enough to localize in one reviewable pass. This PR keeps English as the fallback, does not add a dependency, and localizes the setup/status/help/docs path together so users do not switch languages mid-flow.
+
+Localized surfaces:
+
+- <commands/help/status/errors>
+- <panel labels/descriptions>
+- <README quickstart/package page, if included>
+
+Locales: <locale rationale>
+```
+
 ## Follow-up PR: localized package page
 
 After a runtime/string PR is submitted or accepted, consider a second PR that localizes the package's public-facing page content.
