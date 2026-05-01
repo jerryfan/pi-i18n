@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.1.15
+- Fix(command): paginate `/lang` picker so the generic extension selector does not overflow and block language selection.
+
 ## 0.1.14
 - Docs: README polish + checked-in hero demo GIF asset.
 - Demo(tools/vhs): immersive montage now supports phase-order playback (settings all → chat all → hotkeys all).

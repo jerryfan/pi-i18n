@@ -326,7 +326,9 @@ export default function i18nExtension(pi: ExtensionAPI): void {
 		if (resolved.action === "set") {
 			locale = resolved.locale;
 		} else {
-			// picker (existing UX)
+			// Keep the picker short: pi's generic extension selector does not scroll, so
+			// rendering every shipped locale at once can overflow the terminal and make
+			// lower languages impossible to choose.
 			const title = i18n.t("pi.language.dialog.title");
 			const pick = i18n.t("pi.language.dialog.pick");
 
@@ -395,31 +397,55 @@ export default function i18nExtension(pi: ExtensionAPI): void {
 			};
 
 			const known = shipped.sort(byOrder);
-			const options = [
-				...known.map((l) => {
-					const tag = canonicalizeLocaleTag(l);
-					const name = DISPLAY_NAMES[tag] ?? tag;
-					return `${name} (${tag})${tag === curCanon ? " ✓" : ""}`;
-				}),
-				i18n.t("pi.language.dialog.other"),
-			];
+			const optionFor = (l: string): string => {
+				const tag = canonicalizeLocaleTag(l);
+				const name = DISPLAY_NAMES[tag] ?? tag;
+				return `${name} (${tag})${tag === curCanon ? " ✓" : ""}`;
+			};
+			const otherLabel = i18n.t("pi.language.dialog.other");
+			const nextLabel = "More languages…";
+			const prevLabel = "Previous languages…";
+			const pageSize = 8;
+			let page = Math.max(0, Math.floor(Math.max(0, known.indexOf(curCanon)) / pageSize));
 
-			const choice = await ctx.ui.select(`${title}: ${pick}`, options);
-			if (!choice) return;
+			while (true) {
+				const maxPage = Math.max(0, Math.ceil(known.length / pageSize) - 1);
+				page = Math.max(0, Math.min(page, maxPage));
+				const start = page * pageSize;
+				const visible = known.slice(start, start + pageSize).map(optionFor);
+				const options = [...visible];
+				if (page < maxPage) options.push(nextLabel);
+				if (page > 0) options.push(prevLabel);
+				options.push(otherLabel);
 
-			if (choice === i18n.t("pi.language.dialog.other")) {
-				const other = await ctx.ui.input(title, i18n.t("pi.language.dialog.other.placeholder"));
-				if (!other) return;
-				locale = other;
-			} else {
-				const m = /\(([a-zA-Z0-9-]+)\)/.exec(choice);
-				if (m?.[1]) locale = m[1];
-				else {
-					// Fallback: treat as manual input to avoid dead-ends.
+				const choice = await ctx.ui.select(`${title}: ${pick} (${page + 1}/${maxPage + 1})`, options);
+				if (!choice) return;
+				if (choice === nextLabel) {
+					page += 1;
+					continue;
+				}
+				if (choice === prevLabel) {
+					page -= 1;
+					continue;
+				}
+				if (choice === otherLabel) {
 					const other = await ctx.ui.input(title, i18n.t("pi.language.dialog.other.placeholder"));
 					if (!other) return;
 					locale = other;
+					break;
 				}
+
+				const m = /\(([a-zA-Z0-9-]+)\)/.exec(choice);
+				if (m?.[1]) {
+					locale = m[1];
+					break;
+				}
+
+				// Fallback: treat as manual input to avoid dead-ends.
+				const other = await ctx.ui.input(title, i18n.t("pi.language.dialog.other.placeholder"));
+				if (!other) return;
+				locale = other;
+				break;
 			}
 		}
 
