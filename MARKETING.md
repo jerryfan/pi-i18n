@@ -122,6 +122,12 @@ Top 95+/100 lessons from retracted PRs:
 - **96/100 — Validation honesty is part of trust**: list passed checks separately from blocked checks. If tests cannot run, say why and avoid “targeted checks” spin unless targeted checks truly cover touched code.
 - **96/100 — Ledger intake is not PR evidence**: npm/pi.dev card evidence can add a target, but implementation requires exact files, strings, and maintainer-visible rationale.
 - **95/100 — Retraction is cheaper than defending weak PRs**: close unsupported PRs quickly, apologize plainly, delete branches, and preserve ledger history as negative training data.
+- **95/100 — Maintainer chooses expansion scope**: offer broader localization only as optional follow-up work, with maintainer-selected locales and small PRs.
+- **95/100 — One maintainer, one open experiment at a time**: do not stack multiple localization PRs on the same maintainer until the first receives a positive signal.
+- **95/100 — Campaign velocity must not outrun feedback**: after several submissions, pause to harvest maintainer reactions before opening more similar PRs.
+- **95/100 — Existing i18n is a strong signal**: if a repo already has an i18n pattern, conform to it exactly; if not, keep the bridge tiny and optional.
+- **95/100 — Avoid translating maintainer-authored examples unless requested**: commands, config keys, code examples, tool names, and product names usually stay English.
+- **95/100 — PR body must include a deletion path**: explicitly say the change is easy to revert or isolate if the maintainer dislikes the direction.
 
 Pre-implementation hard gate:
 
@@ -135,6 +141,9 @@ first PR shape: pain-point runtime / compact whole-extension / page-only
 validation plan:
 checks expected to be blocked:
 maintainer-risk sentence: one sentence, no global/localization hype
+optional service footer: omit / compressed / full, with reason
+same-maintainer open PR count:
+feedback harvested from prior PRs:
 ```
 
 ## Pain-point led PR tactic
@@ -212,6 +221,42 @@ Every PR must be:
 Never require maintainers to install `pi-i18n`.
 
 Mention `pi-i18n` only as compatibility or example, not as the primary purpose.
+
+## Optional maintainer-service offer
+
+It is acceptable to offer broader localization help, but only as an optional maintainer-service footer after the concrete PR value is clear.
+
+Use when:
+
+- the PR is already small and pain-point-led
+- the maintainer appears active or responsive
+- the extension has a coherent remaining string/docs surface
+- you can credibly split follow-up work into small PRs
+- the offer lets the maintainer choose locale scope
+
+Do not use when:
+
+- the PR is already large
+- the locale rationale is weak
+- the repo has generated UI bundles only
+- the maintainer has not shown interest in localization
+- the line would make the PR feel like a campaign pitch
+
+Never say "outsource". Never imply the maintainer needs localization. Never promise full-repo translation. Offer reviewable follow-up work only.
+
+Approved footer:
+
+```md
+If broader localization would be useful later, I’m happy to handle follow-up work in small PRs: remaining UI strings, README quickstart, or whichever locale set you prefer. I’ll keep English fallback unchanged and avoid generated files.
+```
+
+First-touch compressed footer:
+
+```md
+If useful later, I’m happy to handle broader localization in small follow-up PRs using whatever locale set you prefer.
+```
+
+Context rule: omit the footer unless it naturally follows from the exact PR and maintainer context.
 
 ## PR scope ladder
 
@@ -555,6 +600,8 @@ Diff must satisfy:
 5. Add screenshots only if UI benefit is clearer.
 6. Do not oversell `pi-i18n`.
 7. Link to compatibility docs only if requested or useful.
+8. Add the optional maintainer-service footer only when the context rule passes.
+9. If the same maintainer already has an open campaign PR, pause unless they responded positively.
 
 ### 7. Prepare page-localization follow-up
 
