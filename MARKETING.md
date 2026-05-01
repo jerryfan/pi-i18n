@@ -110,25 +110,31 @@ Hard gate: before editing, write `locale rationale` as `western default` or `exp
 
 ## Regression lessons from historic submissions
 
-Major regressions to prevent:
+Top 95+/100 lessons from retracted PRs:
 
-- **Locale drift to mean**: early PRs reused `ja/zh-CN/es` or `ja/zh-TW/de` without explicit evidence. Future default is `es/fr/pt-BR`; East Asian locales require recorded evidence.
-- **Pain-point dilution**: some PRs wrapped adjacent generic status/help strings. Keep the first PR anchored to a concrete consequence: wrong approval, wrong config, failed setup, leaked data, wasted context, or wrong model/tool choice.
-- **Scope creep**: whole-extension PRs are good only when the string surface is compact. Do not expand into generated UI, bundled assets, large docs, or unrelated settings.
-- **Validation inconsistency**: some repos had local environment failures. Always separate passed checks from blocked checks and state the blocker precisely; never imply full suite passed if it did not.
-- **Tracker as history vs spec**: submitted PR rows preserve historical facts, even bad locale choices. Future rules live in `MARKETING.md` and tracker discipline notes.
-- **Over-broad target discovery**: package-card evidence is enough for ledger intake, not enough for PR implementation. Before implementation, verify exact file paths and strings.
-- **Maintainer-risk language**: avoid “global users” or broad localization claims. Frame as one small UX/safety fix with English fallback and no dependency.
+- **100/100 — Locale evidence gate is non-negotiable**: no East Asian locale unless a repo/product/community signal is recorded before implementation. Historical `ja/zh-*` choices without evidence were campaign failures.
+- **99/100 — First-touch PR must look hand-written for that repo**: never reuse a locale trio, branch shape, or PR body rhythm across maintainers. Clone patterns read as campaign automation.
+- **99/100 — A localization PR must be a UX bugfix first**: every PR needs one concrete failure mode: wrong approval, wrong config, failed auth/setup, privacy leak, wasted context, wrong model/tool, or wrong process action.
+- **98/100 — Smallest high-risk surface wins**: approval/privacy/security/setup strings beat broad command/status/help wrapping. Do not wrap adjacent copy unless it directly supports the risk path.
+- **98/100 — Western default means default, not excuse**: `es/fr/pt-BR` is acceptable only when no stronger signal exists and the package has broad developer-user fit. Still record `western default` explicitly.
+- **97/100 — Do not submit docs/page PRs as automatic second touches**: page localization must have its own conversion/support pain point and should usually wait for maintainer interest.
+- **97/100 — Whole-extension localization is rare**: use only for tiny string surfaces with clear tests. Otherwise it looks like a translation dump.
+- **96/100 — Validation honesty is part of trust**: list passed checks separately from blocked checks. If tests cannot run, say why and avoid “targeted checks” spin unless targeted checks truly cover touched code.
+- **96/100 — Ledger intake is not PR evidence**: npm/pi.dev card evidence can add a target, but implementation requires exact files, strings, and maintainer-visible rationale.
+- **95/100 — Retraction is cheaper than defending weak PRs**: close unsupported PRs quickly, apologize plainly, delete branches, and preserve ledger history as negative training data.
 
 Pre-implementation hard gate:
 
 ```txt
 locale rationale: western default OR explicit signal with evidence
+anti-pattern check: does this look reusable across repos? if yes, rewrite
 pain consequence: wrong approval/config/setup/privacy/model/context/etc.
 exact strings/files:
+why these strings, not adjacent strings:
 first PR shape: pain-point runtime / compact whole-extension / page-only
 validation plan:
 checks expected to be blocked:
+maintainer-risk sentence: one sentence, no global/localization hype
 ```
 
 ## Pain-point led PR tactic
