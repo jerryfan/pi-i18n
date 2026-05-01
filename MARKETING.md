@@ -165,11 +165,67 @@ Every PR must be:
 - small diff
 - easy to revert
 - isolated translation bundles
-- no marketing-first README edits
+- no marketing-first README edits in the first runtime PR
 
 Never require maintainers to install `pi-i18n`.
 
 Mention `pi-i18n` only as compatibility or example, not as the primary purpose.
+
+## Follow-up PR: localized package page
+
+After a runtime/string PR is submitted or accepted, consider a second PR that localizes the package's public-facing page content.
+
+This means the content that pi.dev/npm/GitHub users see before install:
+
+- README quickstart
+- README feature summary
+- package description if too vague
+- screenshots alt text / captions
+- docs landing section
+- package gallery image/video captions if present
+
+Use aggressively when:
+
+- the package has high downloads
+- README is the main conversion surface
+- the runtime PR already selected locales
+- package solves setup/auth/safety/cost problems
+- docs are concise enough to translate without a giant diff
+
+Do not translate the entire repo on first contact. Translate the install path and decision path.
+
+Best shape:
+
+```txt
+README.md
+README.zh-CN.md
+README.ja.md
+README.de.md
+```
+
+Or, if maintainer prefers one file:
+
+```md
+## Languages
+
+- [English](#readme)
+- [日本語](./README.ja.md)
+- [简体中文](./README.zh-CN.md)
+- [Deutsch](./README.de.md)
+```
+
+Page-localization PR pitch:
+
+```md
+The extension now has a clear setup path, but the package page is still English-only at the point where users decide whether to install it. I translated only the install/quickstart/value-prop path for the same locales as the UI strings, so non-English users can evaluate the package before installing it.
+
+- No code changes
+- English README unchanged
+- Adds concise ja/zh-CN/de README variants
+- Focuses on install, setup, and core safety/cost claims
+```
+
+Use this as a second touchpoint. It gives maintainers another low-risk PR and gives `pi-i18n` another natural compatibility mention without making the first PR feel promotional.
 
 ## Preferred implementation pattern
 
@@ -382,7 +438,29 @@ Diff must satisfy:
 6. Do not oversell `pi-i18n`.
 7. Link to compatibility docs only if requested or useful.
 
-### 7. Catalog status
+### 7. Prepare page-localization follow-up
+
+For every submitted runtime PR, decide whether a docs/page PR should follow.
+
+Create a tracker note:
+
+```txt
+page_pr_candidate: yes/no
+page_surface: README / package description / gallery image / docs quickstart
+page_locales:
+page_pain_point:
+```
+
+Submit the follow-up when one of these is true:
+
+- runtime PR is merged
+- maintainer comments positively
+- package page has high install-friction copy
+- README is short enough for a focused translation PR
+
+Keep it separate from the runtime PR unless the maintainer explicitly asks for docs in the same PR.
+
+### 8. Catalog status
 
 Update `MARKETING_PR_TRACKER.md` immediately after submission.
 
@@ -404,7 +482,7 @@ Required fields:
 | LOC | approximate diff size |
 | result_notes | concise outcome |
 
-### 8. Follow up
+### 9. Follow up
 
 After submission:
 
@@ -414,7 +492,7 @@ After submission:
 - prefer maintainer style over campaign consistency
 - close gracefully if rejected
 
-### 9. Measure success
+### 10. Measure success
 
 Weekly, compute:
 

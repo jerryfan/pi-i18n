@@ -46,12 +46,42 @@ Wrap only:
 - reconnect/auth notifications
 - status text for `mcp-auth`
 
-Avoid:
+Avoid in runtime PR:
 
 - README edits
 - package description edits
 - broad locale dump
 - touching generated/bundled files
+
+### Follow-up page PR
+
+Submit after PR #66 gets a positive response or merges.
+
+Proposed title:
+
+```txt
+Add localized README quickstarts for MCP setup
+```
+
+Proposed body:
+
+```md
+This follows the setup-string localization PR with docs only.
+
+The README explains a real cost issue: MCP definitions can burn 10k+ tokens before the user uses a tool. That is exactly the kind of install decision non-English users need to understand before enabling the adapter.
+
+- No code changes
+- English README unchanged
+- Adds concise ja/zh-CN/de quickstarts
+- Focuses only on why this exists, install, setup, and reconnect/auth basics
+```
+
+Page scope:
+
+- `README.ja.md`
+- `README.zh-CN.md`
+- `README.de.md`
+- small language links in `README.md`
 
 ## pi-subagents
 
