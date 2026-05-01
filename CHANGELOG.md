@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.1.17
+- Change(package): add gallery card image and sharpen npm description for pi.dev package discovery.
+
 ## 0.1.16
 - Fix(command): limit `/lang` picker to completed UI translations; fallback/staging locales remain available through direct locale input.
 

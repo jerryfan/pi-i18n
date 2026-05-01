@@ -1,7 +1,7 @@
 {
   "name": "pi-i18n",
-  "version": "0.1.16",
-  "description": "LTR-only i18n/l10n platform for pi coding agent UI and extensions. Ships zh-TW first.",
+  "version": "0.1.17",
+  "description": "/lang lets pi speak 中文, 日本語, 한국어, Español, Français, Deutsch, and more.",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -26,6 +26,7 @@
     "extensions": [
       "./index.ts"
     ],
+    "image": "https://raw.githubusercontent.com/jerryfan/pi-i18n/main/assets/pi-i18n-card.png",
     "i18n": {
       "manifest": "./i18n.manifest.json",
       "capability": "pi.i18n.v1",
@@ -38,6 +39,7 @@
     "locales/*.json",
     "schemas/*.json",
     "i18n.manifest.json",
+    "assets/*.png",
     "README.md",
     "SPEC.md",
     "CHANGELOG.md",
