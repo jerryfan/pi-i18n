@@ -62,7 +62,7 @@ Work highest score first.
 
 Do not blindly lead with zh-TW, zh-CN, Korean, or any fixed language set.
 
-Default future outreach should prefer Latin-derived locales (`es`, `fr`, `pt-BR`, `it`) for broad developer UX, based on language-market coverage and review familiarity—not maintainer ethnicity, name, avatar, or ancestry. Choose languages that are plausible for **that extension's user base**.
+Default future outreach should prefer evidenced communication-language signals first: repo docs/comments/examples, issue/PR language, package audience, maintainer-stated preferences, community usage, and product geography. When no explicit signal exists, use broad language-market fit (`es`, `fr`, `pt-BR`, `it`) for developer UX and reviewability. Choose languages that are plausible for **that extension's user base**.
 
 Language selection inputs:
 
@@ -144,7 +144,7 @@ Allowed signals:
 - code comments/docs in a non-English language
 - package description or examples targeting a region/language
 
-Do **not** infer native language from name, avatar, ethnicity, ancestry, descent, or location alone.
+Do **not** infer native language from identity traits. Do use evidenced spoken/communication-language signals in the repo or project community, including docs/comments/examples language, issue/PR language, maintainer-stated language, package audience, or product geography.
 
 If repo has clear non-English signals, include one short courtesy line in that language, then keep the technical PR body in English.
 
