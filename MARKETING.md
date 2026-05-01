@@ -171,6 +171,45 @@ Never require maintainers to install `pi-i18n`.
 
 Mention `pi-i18n` only as compatibility or example, not as the primary purpose.
 
+## PR scope ladder
+
+Choose the smallest scope that creates real maintainer value, but do not be timid when the extension surface is compact.
+
+1. **Pain-point runtime PR**: setup/auth/error/destructive-action strings only.
+2. **Whole-extension localization PR**: all user-facing extension strings when the extension has a small/medium UI surface and clean string boundaries.
+3. **Page-localization PR**: public package page / README decision path.
+4. **Combined runtime + page PR**: only when the repo is tiny or maintainer explicitly prefers one PR.
+
+Use whole-extension localization aggressively when:
+
+- total user-facing string surface is under ~80 strings
+- strings are concentrated in 1-5 files
+- tests/build are easy to run
+- no generated/bundled files are touched
+- English fallback can be preserved everywhere
+- locale rationale is extension-specific
+
+Avoid whole-extension localization when:
+
+- it requires architecture churn
+- the repo has generated UI bundles only
+- it would produce a huge diff before maintainer trust exists
+- strings include legal/security/product promises you cannot verify
+
+Whole-extension PR pitch:
+
+```md
+I found the extension's user-facing string surface is small enough to localize cleanly in one pass without changing behavior.
+
+This keeps English as the fallback/default and only adds localized labels, prompts, and status/error text for the same flows users already see.
+
+- No new required dependency
+- No behavior change without an i18n provider
+- English fallback unchanged
+- Locales chosen from visible package/repo signals: <locale rationale>
+- Covers the full extension UI surface, not generated files
+```
+
 ## Follow-up PR: localized package page
 
 After a runtime/string PR is submitted or accepted, consider a second PR that localizes the package's public-facing page content.
