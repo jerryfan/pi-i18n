@@ -79,18 +79,18 @@ Examples:
 
 | Extension type | Better first languages |
 |---|---|
-| coding/model/devtool | `ja`, `zh-CN`, `de`, `fr`, `es` |
-| local Chinese service/API | `zh-CN`, then `en` polish if needed |
+| coding/model/devtool | `ja`, `zh-TW`, `de`, `fr`, `es` |
+| local Chinese service/API | `zh-TW` by default; use `zh-CN` only with explicit repo/product signal |
 | Korea-specific/API package | `ko`, then `en` polish |
 | Europe/productivity package | `de`, `fr`, `es`, `pt-BR` |
-| broad beginner UX package | `es`, `pt-BR`, `zh-CN`, `ja` |
+| broad beginner UX package | `es`, `pt-BR`, `zh-TW`, `ja` |
 | docs-heavy troubleshooting tool | languages matching issue traffic |
 
 Default first offer when no signal exists:
 
 - `es`
 - `pt-BR`
-- `zh-CN`
+- `zh-TW`
 - `ja`
 
 Use `zh-TW` or `ko` first only when repo/content signals make them likely valuable.
@@ -151,7 +151,7 @@ If repo has clear non-English signals, include one short courtesy line in that l
 Example:
 
 ```md
-I noticed some Chinese-language usage context in the repo, so I included zh-CN strings for the highest-friction setup path.
+I noticed explicit Chinese-language usage context in the repo, so I selected the Chinese locale that matches that signal; without a stronger signal, prefer zh-TW over zh-CN.
 ```
 
 ## PR design rules
@@ -273,7 +273,7 @@ Best shape:
 
 ```txt
 README.md
-README.zh-CN.md
+README.zh-TW.md
 README.ja.md
 README.de.md
 ```
@@ -285,7 +285,7 @@ Or, if maintainer prefers one file:
 
 - [English](#readme)
 - [日本語](./README.ja.md)
-- [简体中文](./README.zh-CN.md)
+- [繁體中文](./README.zh-TW.md)
 - [Deutsch](./README.de.md)
 ```
 
@@ -296,7 +296,7 @@ The extension now has a clear setup path, but the package page is still English-
 
 - No code changes
 - English README unchanged
-- Adds concise ja/zh-CN/de README variants
+- Adds concise ja/zh-TW/de README variants
 - Focuses on install, setup, and core safety/cost claims
 ```
 
