@@ -58,67 +58,25 @@ Use this practical scale:
 
 Work highest score first.
 
-## Western-first language-market fit tactic
+## Locale selection tactic
 
-Default future outreach is **Western-language-first** unless explicit repo/product/community evidence says otherwise.
+Choose a small, reviewable locale set for each PR. Keep locale choice secondary to the pain point, preserve English fallback, and let maintainers redirect the locale set if they prefer different languages.
 
-Preferred default set when no explicit signal exists:
+Recommended first-pass shape:
 
-1. `es`
-2. `fr`
-3. `pt-BR`
-4. `it`
-5. `de` for infra/devtool/status/config-heavy packages where German developer-market fit is especially plausible
-
-Do **not** lead with `ja`, `zh-CN`, `zh-TW`, or `ko` by habit. Those locales require explicit support such as repo docs/comments/examples, issue/PR traffic, maintainer-stated preference, product geography, service audience, screenshots/demo text, or community requests. If that support is absent, using East Asian locales fails the campaign gate.
-
-Choose languages that are plausible for **that extension's user base**, but the no-signal fallback is Western languages for developer UX, reviewability, and lower perceived drive-by translation risk.
-
-Language selection inputs:
-
-- README examples and domain terms
-- package purpose and likely geography
-- issue/PR/user comments
-- docs language
-- npm/GitHub keywords
-- external service target market
-- filenames, screenshots, demo text
-- existing community requests
-
-Examples:
-
-| Extension type | Better first languages |
-|---|---|
-| coding/model/devtool | `es`, `fr`, `pt-BR`, `it`; add `de` for config/status-heavy tooling |
-| local Chinese service/API | `zh-TW` or `zh-CN` only with explicit repo/product/community signal |
-| Korea-specific/API package | `ko` only with explicit product/community signal; otherwise use Western default |
-| Europe/productivity package | `de`, `fr`, `es`, `pt-BR` |
-| broad beginner UX package | `es`, `fr`, `pt-BR`, `it` |
-| docs-heavy troubleshooting tool | languages matching issue traffic |
-
-Default first offer when no signal exists:
-
-- `es`
-- `fr`
-- `pt-BR`
-
-Optional fourth locale: `it` or `de`, chosen by extension fit.
-
-Use `ja`, `zh-CN`, `zh-TW`, or `ko` only when repo/content/community signals make them likely valuable. Record the exact signal in the tracker before implementation.
-
-Hard gate: before editing, write `locale rationale` as `western default` or `explicit signal: <evidence>`. If East Asian locales are selected without an explicit signal, stop and revise.
-
-Do **not** infer locale from a maintainer's name, avatar, ethnicity, presumed nationality, or location vibes. A name may trigger a manual search for explicit repo/community evidence, but it is not itself locale evidence. Valid override evidence must be explicit: repo language, docs/comments/issues/PRs, package audience, product geography, community channels, or maintainer-stated preference.
+- 1-3 locales
+- no generated bulk translation dumps
+- locale rationale recorded briefly in the tracker
+- maintainer may request replacement, expansion, or removal
 
 ## Regression lessons from historic submissions
 
 Top 95+/100 lessons from retracted PRs:
 
-- **100/100 — Locale evidence gate is non-negotiable**: no locale override from maintainer name, avatar, ethnicity, presumed nationality, location vibes, or demographic inference. Locale selection requires repo/product/community evidence or maintainer-stated preference. Historical `ja/zh-*` choices without evidence were campaign failures.
-- **99/100 — First-touch PR must look hand-written for that repo**: never reuse a locale trio, branch shape, or PR body rhythm across maintainers. Clone patterns read as campaign automation.
+- **100/100 — Locale choice must stay secondary**: the PR succeeds or fails on concrete UX value, not on arguing for a language set. Keep locale sets small and easy for maintainers to change.
+- **99/100 — First-touch PR must look hand-written for that repo**: never reuse a branch shape or PR body rhythm across maintainers. Clone patterns read as campaign automation.
 - **99/100 — A localization PR must be a UX bugfix first**: every PR needs one concrete failure mode: wrong approval, wrong config, failed auth/setup, privacy leak, wasted context, wrong model/tool, or wrong process action.
 - **98/100 — Smallest high-risk surface wins**: approval/privacy/security/setup strings beat broad command/status/help wrapping. Do not wrap adjacent copy unless it directly supports the risk path.
-- **98/100 — Western default means default, not excuse**: `es/fr/pt-BR` is acceptable only when no stronger signal exists and the package has broad developer-user fit. Still record `western default` explicitly.
 - **97/100 — Do not submit docs/page PRs as automatic second touches**: page localization must have its own conversion/support pain point and should usually wait for maintainer interest.
 - **97/100 — Whole-extension localization is rare**: use only for tiny string surfaces with clear tests. Otherwise it looks like a translation dump.
 - **96/100 — Validation honesty is part of trust**: list passed checks separately from blocked checks. If tests cannot run, say why and avoid “targeted checks” spin unless targeted checks truly cover touched code.
@@ -134,8 +92,7 @@ Top 95+/100 lessons from retracted PRs:
 Pre-implementation hard gate:
 
 ```txt
-locale rationale: western default OR explicit repo/product/community signal with evidence
-identity-inference check: no locale chosen from name/avatar/presumed ethnicity/nationality
+locale rationale:
 anti-pattern check: does this look reusable across repos? if yes, rewrite
 pain consequence: wrong approval/config/setup/privacy/model/context/etc.
 exact strings/files:
@@ -157,7 +114,7 @@ Score each campaign batch before opening PRs:
 
 | Gate | Points | 95+ requirement |
 |---|---:|---|
-| Locale discipline | 20 | Every PR uses `western default` or explicit locale evidence; no unsupported East Asian locales. |
+| Locale scope | 20 | Locale set is small, reviewable, and easy for the maintainer to redirect. |
 | Pain specificity | 20 | Every PR names one concrete failure mode and exact strings/files. |
 | Maintainer context | 15 | No stacked PRs to same maintainer without positive signal; PR body is repo-specific. |
 | Scope control | 15 | Smallest high-risk surface only; no generated files; no adjacent string creep. |
@@ -167,8 +124,8 @@ Score each campaign batch before opening PRs:
 
 Automatic stop conditions:
 
-- any locale chosen from maintainer name, avatar, presumed ethnicity, or presumed nationality
-- any unsupported non-default locale without explicit repo/product/community evidence
+- locale set is large or hard to review
+- locale debate overshadows the concrete UX fix
 - more than one open campaign PR to the same maintainer without positive response
 - PR body could be pasted into another repo unchanged
 - package-card evidence is the only implementation evidence
@@ -180,7 +137,7 @@ Current self-rating after retraction cleanup: **88/100**.
 
 Known gaps before more submissions:
 
-- Historical tracker rows still contain retracted bad-locale facts; acceptable as history, but future candidate rows need stricter `western default` wording.
+- Historical tracker rows still contain retracted locale facts; acceptable as history.
 - Need a visible PR preflight record for each new implementation.
 - Need same-maintainer open-PR counter before submit.
 - Need feedback-harvest step before resubmitting to previously contacted maintainers.
@@ -224,26 +181,9 @@ Convert the finding into a maintainer-value claim:
 
 The PR should feel like a UX bugfix with localization as the mechanism.
 
-## Ethical maintainer-language tactic
+## Maintainer-language tactic
 
-Use explicit repo signals only.
-
-Allowed signals:
-
-- multilingual README
-- issues/PRs written in a non-English language
-- code comments/docs in a non-English language
-- package description or examples targeting a region/language
-
-Do **not** infer native language from identity traits. Do use evidenced spoken/communication-language signals in the repo or project community, including docs/comments/examples language, issue/PR language, maintainer-stated language, package audience, or product geography.
-
-If repo has clear non-English signals, include one short courtesy line in that language, then keep the technical PR body in English.
-
-Example:
-
-```md
-I noticed explicit Chinese-language usage context in the repo, so I selected the Chinese locale that matches that signal. Without such a signal, default future outreach now prefers Latin-derived locales (`es`, `fr`, `pt-BR`, `it`) for broad reviewability.
-```
+Keep the technical PR body in English unless the maintainer asks otherwise. If broader localization help is offered, let the maintainer choose the follow-up locale scope.
 
 ## PR design rules
 
@@ -455,7 +395,7 @@ Register bundles only when useful:
 pi.events.emit("pi-core/i18n/registerBundle", localeBundle);
 ```
 
-Start with 1-3 Western-default languages (`es`, `fr`, `pt-BR`) unless explicit evidence supports another set. Do not submit 20 generated locale files in a first PR.
+Start with 1-3 languages. Do not submit 20 generated locale files in a first PR.
 
 ## PR title template
 
@@ -488,7 +428,7 @@ Rules:
 - cite one exact file, command, issue, or README section
 - no "delighted", "seamless", "robust", "leverage", "unlock", "enhance" filler
 - no long backstory
-- no claims about global users without evidence
+- no broad claims about global users
 - no "I noticed your amazing project" flattery
 - no repeated mention of `pi-i18n`
 - use plain maintainer language: problem → small change → risk control
@@ -515,14 +455,14 @@ This PR makes that path optionally localizable while preserving the current Engl
 - No new dependency
 - No behavior change without an i18n provider
 - English remains the default/fallback
-- Locales chosen from visible package/repo signals: <locale rationale>
+- Locales: <locale rationale>
 - Small diff; easy to revert
 ```
 
-If appropriate, add one explicit-signal courtesy line:
+If appropriate, add one locale-scope line:
 
 ```md
-I chose these locales based on visible repo/package signals rather than adding a broad translation dump.
+I kept the locale set small so it is easy to review or change.
 ```
 
 ## LLM execution workflow
@@ -562,14 +502,11 @@ rg -n "registerCommand|description|ctx\.ui|select\(|input\(|confirm\(|notify\(|l
    - destructive prompts
    - confusing model/provider/settings menus
    - repeated README troubleshooting
-   - non-English issue traffic
-6. Check maintainer and language-market signals:
+6. Check maintainer context:
    - recent commits
    - merged PRs
    - issue response style
-   - explicit non-English repo content
-   - likely user geography from service/domain/docs
-   - if no explicit signal: use Western default (`es`, `fr`, `pt-BR`)
+   - package/domain fit
 7. Decide disposition:
    - `target`
    - `defer`
@@ -585,7 +522,7 @@ pain point found:
 evidence URL/file/line:
 strings to wrap:
 why these strings, not adjacent strings:
-locale rationale: western default OR explicit signal with evidence
+locale rationale:
 locales:
 files touched:
 expected LOC:
@@ -686,7 +623,7 @@ Required fields:
 | status | researching / drafted / submitted / changes-requested / merged / closed / rejected |
 | submitted_at | date |
 | merged_at | date or blank |
-| maintainer_language_signal | explicit signal only |
+| language_context | brief context for selected locales |
 | locales | submitted locales |
 | files_changed | count/list |
 | LOC | approximate diff size |
