@@ -89,7 +89,7 @@ Track pi extension localization PR outreach and outcomes.
 - `evidence`: repo URL, file path, line, issue, README section, screenshot, or package-card signal.
 - `locale_rationale`: must be `western default` or `explicit signal: <evidence>` for all future implementation PRs.
 - For future outreach, prefer Western-default locales (`es`, `fr`, `pt-BR`; optional `it`/`de` by fit) unless explicit repo/product/community evidence supports another set. East Asian locales (`ja`, `zh-CN`, `zh-TW`, `ko`) require recorded explicit evidence before implementation. Preserve submitted PR locale facts as historical records.
-- `maintainer_language_signal`: explicit communication-language signal only: repo docs/comments/examples, issue/PR language, maintainer-stated language, package audience, community usage, or product geography.
+- `maintainer_language_signal`: explicit communication-language signal only: repo docs/comments/examples, issue/PR language, maintainer-stated language, package audience, community usage, or product geography. Never infer from maintainer name, avatar, presumed ethnicity, or presumed nationality.
 - `result_notes`: must distinguish passed checks from blocked checks; never imply full validation passed when local tooling/environment blocked it.
 - `page_pr_candidate`: use aggressively after runtime PRs; separate docs/page PRs are a second low-risk touchpoint.
 - `page_pain_point`: why the public package page blocks evaluation, trust, install, or correct setup.

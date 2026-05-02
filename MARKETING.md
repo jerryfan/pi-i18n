@@ -112,7 +112,7 @@ Hard gate: before editing, write `locale rationale` as `western default` or `exp
 
 Top 95+/100 lessons from retracted PRs:
 
-- **100/100 — Locale evidence gate is non-negotiable**: no East Asian locale unless a repo/product/community signal is recorded before implementation. Historical `ja/zh-*` choices without evidence were campaign failures.
+- **100/100 — Locale evidence gate is non-negotiable**: no locale override from maintainer name, avatar, presumed ethnicity, or presumed nationality. Locale selection requires repo/product/community evidence or maintainer-stated preference. Historical `ja/zh-*` choices without evidence were campaign failures.
 - **99/100 — First-touch PR must look hand-written for that repo**: never reuse a locale trio, branch shape, or PR body rhythm across maintainers. Clone patterns read as campaign automation.
 - **99/100 — A localization PR must be a UX bugfix first**: every PR needs one concrete failure mode: wrong approval, wrong config, failed auth/setup, privacy leak, wasted context, wrong model/tool, or wrong process action.
 - **98/100 — Smallest high-risk surface wins**: approval/privacy/security/setup strings beat broad command/status/help wrapping. Do not wrap adjacent copy unless it directly supports the risk path.
@@ -132,7 +132,8 @@ Top 95+/100 lessons from retracted PRs:
 Pre-implementation hard gate:
 
 ```txt
-locale rationale: western default OR explicit signal with evidence
+locale rationale: western default OR explicit repo/product/community signal with evidence
+identity-inference check: no locale chosen from name/avatar/presumed ethnicity/nationality
 anti-pattern check: does this look reusable across repos? if yes, rewrite
 pain consequence: wrong approval/config/setup/privacy/model/context/etc.
 exact strings/files:
@@ -164,7 +165,8 @@ Score each campaign batch before opening PRs:
 
 Automatic stop conditions:
 
-- any unsupported East Asian locale
+- any locale chosen from maintainer name, avatar, presumed ethnicity, or presumed nationality
+- any unsupported non-default locale without explicit repo/product/community evidence
 - more than one open campaign PR to the same maintainer without positive response
 - PR body could be pasted into another repo unchanged
 - package-card evidence is the only implementation evidence
