@@ -108,11 +108,13 @@ Use `ja`, `zh-CN`, `zh-TW`, or `ko` only when repo/content/community signals mak
 
 Hard gate: before editing, write `locale rationale` as `western default` or `explicit signal: <evidence>`. If East Asian locales are selected without an explicit signal, stop and revise.
 
+Do **not** infer locale from a maintainer's name, avatar, ethnicity, presumed nationality, or location vibes. A name may trigger a manual search for explicit repo/community evidence, but it is not itself locale evidence. Valid override evidence must be explicit: repo language, docs/comments/issues/PRs, package audience, product geography, community channels, or maintainer-stated preference.
+
 ## Regression lessons from historic submissions
 
 Top 95+/100 lessons from retracted PRs:
 
-- **100/100 — Locale evidence gate is non-negotiable**: no locale override from maintainer name, avatar, presumed ethnicity, or presumed nationality. Locale selection requires repo/product/community evidence or maintainer-stated preference. Historical `ja/zh-*` choices without evidence were campaign failures.
+- **100/100 — Locale evidence gate is non-negotiable**: no locale override from maintainer name, avatar, ethnicity, presumed nationality, location vibes, or demographic inference. Locale selection requires repo/product/community evidence or maintainer-stated preference. Historical `ja/zh-*` choices without evidence were campaign failures.
 - **99/100 — First-touch PR must look hand-written for that repo**: never reuse a locale trio, branch shape, or PR body rhythm across maintainers. Clone patterns read as campaign automation.
 - **99/100 — A localization PR must be a UX bugfix first**: every PR needs one concrete failure mode: wrong approval, wrong config, failed auth/setup, privacy leak, wasted context, wrong model/tool, or wrong process action.
 - **98/100 — Smallest high-risk surface wins**: approval/privacy/security/setup strings beat broad command/status/help wrapping. Do not wrap adjacent copy unless it directly supports the risk path.
