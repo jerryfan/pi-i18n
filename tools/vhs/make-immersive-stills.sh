@@ -14,7 +14,7 @@ Usage:
   make-immersive-stills.sh <out_dir>
 
 Example (WSL):
-  OUT=/mnt/c/trash/pi/$(date +%F)-pi-i18n-immersive-r1
+  OUT=/mnt/d/trash/pi/$(date +%F)-pi-i18n-immersive-r1
   bash tools/vhs/make-immersive-stills.sh "$OUT"
 
 Writes:

@@ -6,7 +6,7 @@ set -euo pipefail
 # - extracts a single PNG still per locale
 # - stitches stills into a short MP4 + GIF
 #
-# Intended usage: run inside WSL2 and write outputs to /mnt/c/trash/... (per AGENTS.md).
+# Intended usage: run inside WSL2 and write outputs to /mnt/d/trash/... (per AGENTS.md).
 
 usage() {
 	cat <<'EOF'
@@ -14,7 +14,7 @@ Usage:
   make-settings-stills.sh <out_dir>
 
 Example (WSL):
-  OUT=/mnt/c/trash/pi/$(date +%F)-pi-i18n-demo-r1
+  OUT=/mnt/d/trash/pi/$(date +%F)-pi-i18n-demo-r1
   bash tools/vhs/make-settings-stills.sh "$OUT"
 
 Writes:
