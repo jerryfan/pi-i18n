@@ -155,6 +155,7 @@ Project override:
 Common keys:
 - `locale` (e.g. `"zh-TW"`, `"fr"`)
 - `fallbackLocale` (default: `"en"`)
+- `footerMode` (`"system"` | `"locale"` | `"off"`, default: `"system"`)
 - `coreHacksEnabled` (best-effort UI localization)
 - `probeEnabled` (patch telemetry)
 - `disableHeader`, `disableHeaderOnStartup`
@@ -174,6 +175,8 @@ Common keys:
   - run `/reload` (or restart Pi)
 - **Strings didn’t change after switching locale**
   - run `/lang hacks` (core-hacks must be enabled to localize non-i18n’d Pi UI)
+- **I want Pi's built-in footer back**
+  - set `"footerMode": "system"` in `~/.pi/agent/state/pi-i18n/config.json`
 - **Unsure what’s patched**
   - run `/lang probe` and `/lang debug`
 
