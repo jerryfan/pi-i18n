@@ -10,6 +10,8 @@ export type I18nConfig = {
 	// If true, pi-i18n will not set header during session_start.
 	// (It may still set header later on explicit actions like /language.)
 	disableHeaderOnStartup?: boolean;
+	// If true, pi-i18n will never call ctx.ui.setFooter(...).
+	disableFooter?: boolean;
 	// Enable/disable runtime core hacks (default: true)
 	coreHacksEnabled?: boolean;
 	// Enable/disable runtime probe telemetry for patch health (default: true)

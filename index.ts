@@ -162,7 +162,9 @@ export default function i18nExtension(pi: ExtensionAPI): void {
 		if (shouldApplyHeaderOnStartup()) {
 			applyLocalizedHeader(pi, ctx, i18n as unknown as I18nApi, { warnCoreMismatch });
 		}
-		applyLocalizedFooter(pi, ctx, i18n as unknown as I18nApi);
+		if (runtimeConfig.disableFooter !== true) {
+			applyLocalizedFooter(pi, ctx, i18n as unknown as I18nApi);
+		}
 
 		// warn if RTL selected
 		if ((i18n as any).isRtlSelected?.()) {
