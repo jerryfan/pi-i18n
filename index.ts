@@ -129,6 +129,7 @@ export default function i18nExtension(pi: ExtensionAPI): void {
 
 	// Header chrome is disabled by policy for this extension runtime.
 	const shouldApplyHeaderOnStartup = () => false;
+	const getFooterMode = () => runtimeConfig.footerMode ?? "system";
 
 	// Install tool overrides once (behavior preserved, rendering localized)
 	// Must be registered before the first session_start fires.
@@ -162,7 +163,12 @@ export default function i18nExtension(pi: ExtensionAPI): void {
 		if (shouldApplyHeaderOnStartup()) {
 			applyLocalizedHeader(pi, ctx, i18n as unknown as I18nApi, { warnCoreMismatch });
 		}
-		applyLocalizedFooter(pi, ctx, i18n as unknown as I18nApi);
+		const footerMode = getFooterMode();
+		if (footerMode === "locale") {
+			applyLocalizedFooter(pi, ctx, i18n as unknown as I18nApi);
+		} else if (footerMode === "off") {
+			ctx.ui?.setFooter?.(() => ({ invalidate() {}, render() { return []; } }));
+		}
 
 		// warn if RTL selected
 		if ((i18n as any).isRtlSelected?.()) {
